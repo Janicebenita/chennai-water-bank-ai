@@ -215,14 +215,24 @@ impact calculations, GIS view, scenarios and persistence fallback remain the
 authoritative product. The AI path is additive and never issues actuator
 commands.
 
-### Moss integration
+## Moss Integration
 
-`MossSemanticMemory` is the sole Moss-specific adapter. It uses the official
-Python SDK to create or update a WaterEvent index, load that index into the
-Cloud Run process and perform bounded semantic retrieval. Moss is disabled by
-default. No live Moss claim should be made until a configured account has
-successfully completed an end-to-end retrieval test.
+Chennai Water Bank AI uses Moss as its production semantic-memory and retrieval layer.
 
+Production index:
+
+`chennai-water-bank-events`
+
+Each meaningful WaterEvent is converted to a Moss `DocumentInfo` record and indexed with metadata including zone, asset, event type, severity, action, and outcome.
+
+For each analysis request:
+
+1. Authoritative Water Bank facts are collected.
+2. One semantic query is sent to Moss.
+3. Retrieved context is shared across all four agents.
+4. `results.time_taken_ms` is propagated to the UI.
+5. The Orchestrator combines live facts, Moss evidence, and agent findings.
+6. Human approval remains required.
 ### Architecture
 
 ```text
