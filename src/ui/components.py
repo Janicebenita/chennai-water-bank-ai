@@ -120,7 +120,7 @@ def node_map(nodes: list[WaterBankNode], steps: list[SimulationStep]) -> None:
         )
     )
     fig.update_layout(
-        mapbox={"style": "carto-darkmatter", "center": {"lat": 13.02, "lon": 80.20}, "zoom": 9.3},
+        mapbox={"style": "open-street-map", "center": {"lat": 13.02, "lon": 80.20}, "zoom": 9.3},
         margin={"l": 0, "r": 0, "t": 0, "b": 0},
         height=480,
         paper_bgcolor="rgba(0,0,0,0)",
