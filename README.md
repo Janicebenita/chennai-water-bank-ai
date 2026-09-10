@@ -16,33 +16,24 @@ Six fictional demonstration nodes represent urban catchments in Velachery, T. Na
 
 ## Architecture
 
-```text
-Digital Sensor Simulator (today)        Physical sensors + gateway (future)
-              │                                      │
-              └──────────┬───────────────────────────┘
-                         ▼
-              Normalized SensorDataSource
-                         │
-                         ▼
-             Quality + First-Flush Gate
-                         │
-                         ▼
-              Explainable Decision Engine
-                         │
-           ┌─────────────┼─────────────┐
-           ▼             ▼             ▼
-        Storage       Recharge      Downstream
-           └─────────────┬─────────────┘
-                         ▼
-                   Impact Engine
-                         │
-              Memory / optional Firestore
-                         │
-                         ▼
-                Streamlit Dashboard
-```
+![Chennai Water Bank AI Architecture](Docs/architecture.png)
 
-The simulator implements `SensorDataSource`; a future MQTT or HTTPS adapter can implement the same interface without changing hydrology, decision or impact logic.
+### Dual-path design
+
+**Path A — Authoritative**
+Live rainfall, storage, recharge capacity, asset status, GIS, and Water Ledger data flow directly to the Water Bank Orchestrator.
+
+**Path B — Semantic**
+Operational WaterEvents are indexed in Moss and retrieved as low-latency semantic context for the four collaborative agents:
+
+- Rain & Risk Agent
+- Incident Memory Agent
+- Capacity Agent
+- Asset & Maintenance Agent
+
+The Orchestrator combines authoritative facts, Moss context, and agent findings before presenting guidance to the AI Command Center.
+
+Human operators retain final decision authority.
 
 ## Features
 
