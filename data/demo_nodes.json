@@ -1,0 +1,80 @@
+[
+  {
+    "node_id": "WB-VEL-01",
+    "name": "Velachery Campus Node",
+    "zone": "Velachery",
+    "latitude": 12.9791,
+    "longitude": 80.2209,
+    "catchment_area_m2": 2100.0,
+    "runoff_coefficient": 0.82,
+    "storage_capacity_l": 32000.0,
+    "current_storage_l": 11000.0,
+    "recharge_capacity_l_per_hour": 7500.0,
+    "recharge_available": true
+  },
+  {
+    "node_id": "WB-TNG-02",
+    "name": "T. Nagar Commercial Node",
+    "zone": "T. Nagar",
+    "latitude": 13.0418,
+    "longitude": 80.2341,
+    "catchment_area_m2": 1650.0,
+    "runoff_coefficient": 0.9,
+    "storage_capacity_l": 24000.0,
+    "current_storage_l": 20500.0,
+    "recharge_capacity_l_per_hour": 4000.0,
+    "recharge_available": true
+  },
+  {
+    "node_id": "WB-ADY-03",
+    "name": "Adyar School Node",
+    "zone": "Adyar",
+    "latitude": 13.0067,
+    "longitude": 80.2577,
+    "catchment_area_m2": 1200.0,
+    "runoff_coefficient": 0.7,
+    "storage_capacity_l": 125000.0,
+    "current_storage_l": 4200.0,
+    "recharge_capacity_l_per_hour": 5200.0,
+    "recharge_available": true
+  },
+  {
+    "node_id": "WB-ANN-04",
+    "name": "Anna Nagar Park Node",
+    "zone": "Anna Nagar",
+    "latitude": 13.085,
+    "longitude": 80.2101,
+    "catchment_area_m2": 2800.0,
+    "runoff_coefficient": 0.55,
+    "storage_capacity_l": 200000.0,
+    "current_storage_l": 15500.0,
+    "recharge_capacity_l_per_hour": 10000.0,
+    "recharge_available": true
+  },
+  {
+    "node_id": "WB-PER-05",
+    "name": "Perungudi Institutional Node",
+    "zone": "Perungudi",
+    "latitude": 12.961,
+    "longitude": 80.2409,
+    "catchment_area_m2": 2300.0,
+    "runoff_coefficient": 0.86,
+    "storage_capacity_l": 30000.0,
+    "current_storage_l": 9200.0,
+    "recharge_capacity_l_per_hour": 6500.0,
+    "recharge_available": true
+  },
+  {
+    "node_id": "WB-TAM-06",
+    "name": "Tambaram Civic Node",
+    "zone": "Tambaram",
+    "latitude": 12.9249,
+    "longitude": 80.1,
+    "catchment_area_m2": 3400.0,
+    "runoff_coefficient": 0.76,
+    "storage_capacity_l": 48000.0,
+    "current_storage_l": 47000.0,
+    "recharge_capacity_l_per_hour": 9000.0,
+    "recharge_available": false
+  }
+]

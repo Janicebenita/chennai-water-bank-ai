@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg: #061417;
+      --panel: #0b2529;
+      --panel-2: #103238;
+      --panel-3: #0a1e22;
+      --line: rgba(135,222,205,.20);
+      --line-strong: rgba(92,225,212,.42);
+      --text: #e8f7f4;
+      --muted: #8ba9a5;
+      --cyan: #5ce1d4;
+      --blue: #43bfff;
+      --green: #69d39c;
+      --amber: #f7bd58;
+      --red: #ff6b6b;
+      --route-angle: @@ROUTER_ANGLE@@;
+      --tank-before: @@TANK_BEFORE@@%;
+      --tank-after: @@TANK_AFTER@@%;
+    }
+    html, body { margin: 0; min-height: 100%; background: transparent; color: var(--text); font-family: Inter, "Segoe UI", sans-serif; }
+    button, input { font: inherit; }
+    button:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+    .system-shell {
+      position: relative; min-height: 1285px; overflow: hidden; padding: 18px;
+      border: 1px solid var(--line); border-radius: 22px;
+      background:
+        radial-gradient(circle at 8% 4%, rgba(67,191,255,.12), transparent 24%),
+        radial-gradient(circle at 88% 88%, rgba(105,211,156,.09), transparent 25%),
+        linear-gradient(145deg, #081b1e, #061316);
+    }
+    .system-shell:fullscreen { border-radius: 0; min-height: 100vh; overflow: auto; padding: 28px; background: #061417; }
+    .system-shell.paused *, .system-shell.paused *::before, .system-shell.paused *::after { animation-play-state: paused !important; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; margin-bottom: 12px; }
+    .eyebrow { color: var(--cyan); font-size: 9px; letter-spacing: .16em; font-weight: 850; }
+    h2 { margin: 5px 0 4px; font-size: clamp(21px, 2.6vw, 31px); letter-spacing: -.04em; }
+    .subtitle { max-width: 760px; color: var(--muted); font-size: 11px; line-height: 1.55; }
+    .status-stack { display: flex; flex-wrap: wrap; gap: 7px; justify-content: flex-end; }
+    .pill { padding: 6px 9px; border: 1px solid var(--line-strong); border-radius: 999px; color: #b7f4ed; font-size: 8px; letter-spacing: .07em; font-weight: 850; white-space: nowrap; }
+    .pill.warn { color: #f4d9a5; border-color: rgba(247,189,88,.35); }
+
+    .control-deck { display: grid; grid-template-columns: 1.4fr auto auto; gap: 10px; align-items: center; padding: 10px; border: 1px solid var(--line); border-radius: 13px; background: rgba(7,27,30,.88); }
+    .story-controls, .mode-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .control-button, .mode-button {
+      min-height: 32px; padding: 7px 10px; border: 1px solid rgba(92,225,212,.25); border-radius: 8px;
+      background: rgba(92,225,212,.06); color: #dffaf6; font-size: 9px; font-weight: 800; cursor: pointer;
+    }
+    .control-button:hover, .mode-button:hover { background: rgba(92,225,212,.13); }
+    .control-button.primary { background: linear-gradient(100deg,#168f88,#236c92); border-color: transparent; }
+    .mode-button.active { color: #061719; background: var(--cyan); border-color: var(--cyan); }
+    .step-indicator { padding: 7px 9px; border-radius: 8px; color: var(--cyan); background: rgba(92,225,212,.07); font-size: 9px; font-weight: 900; white-space: nowrap; }
+    .data-toggle { display: flex; align-items: center; gap: 7px; color: #bad1cd; font-size: 9px; font-weight: 750; white-space: nowrap; }
+    .data-toggle input { accent-color: var(--cyan); width: 15px; height: 15px; }
+
+    .scene-panel { display: grid; grid-template-columns: 190px 1fr; gap: 12px; align-items: center; margin: 10px 0 12px; padding: 10px 12px; border-left: 3px solid var(--cyan); border-radius: 0 10px 10px 0; background: rgba(92,225,212,.055); }
+    .scene-title { color: #e8fffb; font-size: 10px; letter-spacing: .1em; font-weight: 900; }
+    .scene-caption { color: #9bb7b3; font-size: 10px; line-height: 1.45; }
+
+    .engineering-loop { position:relative; margin:0 0 12px; padding:11px 12px 9px; overflow:hidden; border:1px solid rgba(135,222,205,.16); border-radius:13px; background:linear-gradient(115deg,rgba(9,34,38,.97),rgba(6,23,26,.96)); }
+    .engineering-loop-header { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin-bottom:9px; }
+    .engineering-loop-title { color:#def9f5; font-size:9px; letter-spacing:.09em; font-weight:900; }
+    .engineering-loop-title span { display:block; margin-bottom:2px; color:var(--cyan); font-size:6px; letter-spacing:.15em; }
+    .engineering-loop-order { color:#75928e; font-size:7px; letter-spacing:.08em; font-weight:850; text-align:right; }
+    .engineering-sequence { position:relative; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:13px; padding-bottom:22px; }
+    .engineering-sequence::before { content:""; position:absolute; left:7%; right:7%; top:49px; height:2px; background:linear-gradient(90deg,rgba(92,225,212,.28) 0 38%,rgba(247,189,88,.32) 38% 82%,rgba(105,211,156,.3) 82%); }
+    .engineering-card { --step-color:var(--cyan); position:relative; z-index:2; min-height:91px; padding:8px; border:1px solid color-mix(in srgb,var(--step-color) 22%,transparent); border-radius:9px; background:rgba(4,19,22,.94); opacity:.62; transition:.28s ease; animation:engineeringFocus 10s ease-in-out infinite; animation-delay:var(--handoff-delay); }
+    .engineering-card:not(:last-of-type)::after { content:"→"; position:absolute; z-index:4; top:42px; right:-12px; color:#5e8f8a; font-size:10px; font-weight:900; }
+    .engineering-card.software { --step-color:var(--green); }
+    .engineering-card.plc, .engineering-card.actuator { --step-color:var(--amber); }
+    .engineering-card.feedback { --step-color:var(--green); }
+    .engineering-card-head { display:flex; align-items:center; gap:6px; margin-bottom:5px; }
+    .engineering-icon { display:grid; place-items:center; flex:0 0 23px; width:23px; height:23px; border:1px solid color-mix(in srgb,var(--step-color) 65%,transparent); border-radius:50%; color:var(--step-color); background:color-mix(in srgb,var(--step-color) 8%,#071719); font-size:10px; font-weight:950; box-shadow:0 0 10px color-mix(in srgb,var(--step-color) 12%,transparent); }
+    .plc .engineering-icon { border-radius:5px; }
+    .actuator .engineering-icon { position:relative; }
+    .actuator .engineering-icon::after { content:""; position:absolute; width:2px; height:14px; border-radius:3px; background:var(--amber); transform:rotate(var(--route-angle)); animation:miniActuator 4s ease-in-out infinite; }
+    .engineering-role { color:var(--step-color); font-size:6px; letter-spacing:.13em; font-weight:950; }
+    .engineering-name { margin-top:1px; color:#e5f8f5; font-size:8px; font-weight:900; }
+    .engineering-copy { color:#7e9e99; font-size:6px; line-height:1.42; }
+    .engineering-result { margin-top:5px; color:var(--step-color); font-size:6px; font-weight:900; letter-spacing:.04em; }
+    .handoff-packet { position:absolute; z-index:4; left:7%; top:45px; width:10px; height:10px; border-radius:3px; background:var(--cyan); box-shadow:0 0 12px rgba(92,225,212,.72); animation:handoffTravel 10s linear infinite; pointer-events:none; }
+    .feedback-return { position:absolute; z-index:1; left:7%; right:7%; bottom:8px; height:8px; border-bottom:1px dashed rgba(105,211,156,.28); }
+    .feedback-return::before { content:"FEEDBACK RETURNS TO SENSOR"; position:absolute; left:50%; bottom:-4px; transform:translateX(-50%); padding:0 6px; color:#6ca88c; background:#071a1d; font-size:5px; letter-spacing:.09em; font-weight:900; white-space:nowrap; }
+    .feedback-return::after { content:""; position:absolute; right:0; bottom:-4px; width:8px; height:8px; border-radius:50%; background:var(--green); box-shadow:0 0 11px rgba(105,211,156,.65); animation:feedbackReturn 10s linear infinite; }
+
+    .world { position: relative; border: 1px solid var(--line); border-radius: 16px; background: rgba(6,23,26,.78); }
+    .world-label { position: absolute; top: 10px; left: 12px; z-index: 4; color: var(--cyan); font-size: 8px; letter-spacing: .15em; font-weight: 900; }
+    .world-label span { color: #6f908c; margin-left: 7px; letter-spacing: .07em; }
+    .digital-layer { min-height: 265px; padding: 32px 12px 12px; transition: .35s ease; }
+    .digital-grid { display: grid; grid-template-columns: 1.04fr 1.45fr 1.05fr; gap: 10px; }
+    .tech-card { position: relative; min-height: 216px; padding: 12px; border: 1px solid rgba(92,225,212,.18); border-radius: 12px; background: linear-gradient(150deg,rgba(14,45,49,.95),rgba(7,27,31,.95)); transition: opacity .3s, filter .3s, border-color .3s, box-shadow .3s; }
+    .tech-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 9px; }
+    .tech-kicker { color: var(--cyan); font-size: 7px; letter-spacing: .13em; font-weight: 850; }
+    .tech-title { margin-top: 3px; font-size: 11px; font-weight: 900; letter-spacing: .02em; }
+    .tech-chip { border: 1px solid var(--line); border-radius: 999px; padding: 4px 6px; color: #9fc0bb; font-size: 7px; font-weight: 800; white-space: nowrap; }
+    .telemetry-table { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+    .telemetry-reading { padding: 6px 7px; border-radius: 7px; background: rgba(5,20,23,.7); border: 1px solid rgba(135,222,205,.10); }
+    .telemetry-reading small { display: block; color: #6f908c; font-size: 6px; letter-spacing: .08em; font-weight: 850; }
+    .telemetry-reading strong { display: block; margin-top: 2px; color: #d9f3ef; font-size: 10px; }
+    .aggregate-packet { position: relative; margin-top: 7px; padding: 6px 8px 6px 24px; border-radius: 7px; background: rgba(92,225,212,.08); color: #a8e7df; font-size: 7px; font-weight: 800; overflow: hidden; }
+    .aggregate-packet::before { content: ""; position: absolute; left: 7px; top: 50%; width: 8px; height: 8px; margin-top: -4px; border-radius: 2px; background: var(--cyan); box-shadow: 0 0 10px rgba(92,225,212,.65); animation: packetPulse 1.5s ease-in-out infinite; }
+
+    .brain-card { border-color: rgba(92,225,212,.34); box-shadow: inset 0 0 35px rgba(23,121,118,.06); }
+    .brain-steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 5px; }
+    .brain-step { position: relative; padding: 7px 5px; border-radius: 7px; background: rgba(5,21,24,.75); border: 1px solid rgba(135,222,205,.10); text-align: center; transition: .25s; }
+    .brain-step:not(:last-child)::after { content: "›"; position: absolute; right: -6px; top: 13px; z-index: 2; color: #5f8c88; }
+    .brain-step b { display: block; color: var(--cyan); font-size: 8px; }
+    .brain-step span { display: block; margin-top: 2px; color: #7e9c98; font-size: 6px; font-weight: 750; }
+    .rule-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 7px; }
+    .rule { display: flex; justify-content: space-between; gap: 5px; padding: 5px 6px; border-radius: 6px; color: #8ba8a4; background: rgba(6,23,26,.74); font-size: 7px; }
+    .rule b { color: var(--green); }
+    .decision-result { margin-top: 7px; padding: 8px; border: 1px solid rgba(105,211,156,.28); border-radius: 8px; background: rgba(105,211,156,.07); text-align: center; }
+    .decision-result small { display: block; color: #87aaa4; font-size: 6px; letter-spacing: .12em; font-weight: 900; }
+    .decision-result strong { display: block; color: #a8f0c8; margin-top: 2px; font-size: 17px; letter-spacing: -.02em; }
+    .reason-list { display: none; margin: 6px 0 0; padding: 0; list-style: none; }
+    .reason-list li { color: #9cb6b2; font-size: 6px; line-height: 1.5; }
+    .reason-list li span { color: var(--green); margin-right: 4px; }
+
+    .command-packet { position: relative; padding: 9px; border: 1px solid rgba(247,189,88,.33); border-radius: 8px; background: rgba(247,189,88,.07); text-align: center; overflow: hidden; }
+    .command-packet small { color: #b79a61; font-size: 6px; letter-spacing: .12em; font-weight: 900; }
+    .command-packet strong { display: block; color: #ffd98f; margin-top: 3px; font-size: 12px; }
+    .command-packet::after { content: ""; position: absolute; top: 0; bottom: 0; width: 28px; left: -34px; background: linear-gradient(90deg,transparent,rgba(255,225,166,.24),transparent); animation: commandScan 2s linear infinite; }
+    .hardware-chain { display: grid; gap: 5px; margin-top: 7px; }
+    .hardware-node { display: flex; align-items: center; gap: 7px; padding: 5px 7px; border-radius: 6px; border: 1px solid rgba(135,222,205,.10); background: rgba(5,20,23,.75); }
+    .hardware-icon { display: grid; place-items: center; width: 19px; height: 19px; border-radius: 5px; color: #061719; background: var(--amber); font-size: 8px; font-weight: 950; }
+    .hardware-copy b { display: block; font-size: 7px; }
+    .hardware-copy span { display: block; color: #718f8b; font-size: 6px; margin-top: 1px; }
+    .verify-status { margin-top: 7px; padding: 6px; border-radius: 6px; color: #87a8a3; background: rgba(4,18,21,.7); font-size: 7px; font-weight: 800; text-align: center; }
+    .verify-status.verified { color: var(--green); border: 1px solid rgba(105,211,156,.28); }
+
+    .control-bridge { position: relative; height: 82px; margin: 7px 0; transition: .35s; }
+    .boundary-label { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); padding: 5px 9px; border-radius: 999px; border: 1px dashed rgba(135,222,205,.23); color: #73928e; background: #071719; font-size: 7px; letter-spacing: .1em; font-weight: 850; white-space: nowrap; }
+    .telemetry-lane, .command-lane { position: absolute; top: 0; bottom: 0; width: 2px; background: rgba(92,225,212,.24); }
+    .telemetry-lane { left: 18%; }
+    .command-lane { right: 17%; background: rgba(247,189,88,.24); }
+    .lane-label { position: absolute; padding: 3px 6px; border-radius: 6px; background: #071719; font-size: 7px; font-weight: 900; letter-spacing: .08em; white-space: nowrap; }
+    .telemetry-lane .lane-label { left: 8px; top: 22px; color: var(--cyan); }
+    .command-lane .lane-label { right: 8px; top: 22px; color: var(--amber); }
+    .data-packet, .control-pulse { position: absolute; left: -4px; width: 10px; height: 10px; border-radius: 3px; }
+    .data-packet { bottom: 0; background: var(--cyan); box-shadow: 0 0 10px rgba(92,225,212,.75); animation: telemetryUp 2.3s linear infinite; }
+    .data-packet.p2 { animation-delay: .75s; } .data-packet.p3 { animation-delay: 1.45s; }
+    .control-pulse { top: 0; background: var(--amber); box-shadow: 0 0 13px rgba(247,189,88,.8); animation: commandDown 1.65s cubic-bezier(.3,.05,.35,1) infinite; }
+
+    .physical-layer { min-height: 505px; padding: 30px 12px 12px; transition: .35s; }
+    .pipeline { display: grid; grid-template-columns: repeat(6,1fr); gap: 18px; align-items: stretch; }
+    .stage { position: relative; min-height: 130px; padding: 10px 7px 8px; text-align: center; border: 1px solid var(--line); border-radius: 11px; background: linear-gradient(155deg,rgba(15,48,52,.95),rgba(8,28,32,.95)); transition: .3s; }
+    .stage::after { content: ""; position: absolute; left: calc(100% + 3px); top: 50%; width: 12px; height: 3px; background: rgba(67,191,255,.28); }
+    .stage:last-child::after { display: none; }
+    .stage::before { content: ""; position: absolute; left: calc(100% + 3px); top: calc(50% - 2px); width: 8px; height: 6px; border-radius: 5px; background: var(--blue); opacity: 0; animation: waterAcross 3s linear infinite; animation-delay: var(--water-delay); z-index: 2; }
+    .stage:last-child::before { display: none; }
+    .visual { height: 66px; position: relative; display: flex; align-items: center; justify-content: center; }
+    .stage-label { color: #dff5f1; font-size: 8px; font-weight: 900; letter-spacing: .06em; }
+    .stage-detail { color: #6f8f8b; font-size: 6px; line-height: 1.35; margin-top: 3px; }
+    .cloud { width: 46px; height: 17px; border-radius: 20px; background: #819ca4; position: absolute; top: 9px; }
+    .cloud::before, .cloud::after { content: ""; position: absolute; border-radius: 50%; background: #92aeb5; }
+    .cloud::before { width: 21px; height: 21px; left: 8px; top: -11px; } .cloud::after { width: 17px; height: 17px; right: 7px; top: -8px; }
+    .rain { position: absolute; top: 33px; width: 3px; height: 11px; border-radius: 3px; background: var(--blue); animation: rainFall 1.1s linear infinite; }
+    .rain.r1 { left: 34%; } .rain.r2 { left: 49%; animation-delay:.32s; } .rain.r3 { left:64%; animation-delay:.64s; }
+    .roof { width: 59px; height: 28px; background: #27484c; clip-path: polygon(50% 0,100% 65%,87% 65%,87% 100%,13% 100%,13% 65%,0 65%); }
+    .gutter { position: absolute; left: calc(50% + 26px); top: 31px; width: 4px; height: 29px; border-radius: 3px; background: var(--blue); overflow: hidden; }
+    .gutter::after { content: ""; position: absolute; left: 0; right: 0; top: -10px; height: 9px; background: #ddf8ff; animation: pipeDown 1s linear infinite; }
+    .chamber, .filter { width: 39px; height: 58px; border: 3px solid #849da0; border-radius: 7px 7px 12px 12px; overflow: hidden; position: relative; background: #10282c; }
+    .chamber-water { position: absolute; inset: auto 0 0; height: 42%; background: linear-gradient(#4fc5e8,#257eae); animation: chamberLevel 3s ease-in-out infinite; }
+    .screen { position: absolute; left: 5px; right: 5px; top: 12px; height: 2px; z-index: 2; background: #d7b66e; box-shadow: 0 8px #d7b66e,0 16px #d7b66e; }
+    .filter { border-radius: 8px; }
+    .media { position: absolute; left: 4px; right: 4px; height: 13px; }
+    .media.one { bottom: 4px; background:#b9a26b; } .media.two { bottom:18px; background:#657b6e; } .media.three { bottom:32px; background:#d3c9a4; }
+    .quality-gate { width: 51px; height: 51px; border-radius: 50%; display: grid; place-items: center; border: 3px solid @@GATE_COLOR@@; color: @@GATE_COLOR@@; font-size: 21px; animation: gatePulse 2s ease-in-out infinite; }
+    .router-body { width: 55px; height: 55px; border-radius: 50%; position: relative; border: 3px solid var(--amber); background: #0a2226; box-shadow: 0 0 16px rgba(247,189,88,.12); }
+    .router-body::before { content: ""; position: absolute; width: 7px; height: 7px; border-radius: 50%; left: 21px; top: 21px; background: #fff3d8; box-shadow: 0 0 8px var(--amber); z-index: 2; }
+    .router-needle { position: absolute; left: 25px; top: 10px; width: 4px; height: 35px; border-radius: 5px; background: var(--amber); transform-origin: 2px 17px; transform: rotate(var(--route-angle)); transition: transform 1.3s ease; }
+    .actuator-badge { position: absolute; right: -8px; top: -10px; padding: 3px 5px; border-radius: 5px; color: #1b1407; background: var(--amber); font-size: 6px; font-weight: 950; }
+    .router-live-state { position: absolute; bottom: 5px; left: 0; right: 0; color: var(--amber); font-size: 6px; font-weight: 900; }
+
+    .sensor-node { position: absolute; z-index: 8; min-width: 73px; padding: 4px 5px 4px 18px; border: 1px solid rgba(92,225,212,.42); border-radius: 7px; background: rgba(5,25,28,.96); text-align: left; box-shadow: 0 0 12px rgba(92,225,212,.12); cursor: help; transition: .25s; }
+    .sensor-node::before { content: ""; position: absolute; left: 6px; top: 50%; width: 7px; height: 7px; margin-top: -4px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 0 0 rgba(92,225,212,.6); animation: sensorPulse 2.6s ease-out infinite; }
+    .sensor-node small { display: block; color: #6f9691; font-size: 5px; letter-spacing: .08em; font-weight: 900; }
+    .sensor-node strong { display: block; color: #d8f3ef; font-size: 6px; margin-top: 1px; white-space: nowrap; }
+    .sensor-node b { display: block; color: var(--cyan); font-size: 8px; margin-top: 1px; white-space: nowrap; }
+    .sensor-rain { left: 4px; top: -16px; } .sensor-quality { right: 3px; top: -16px; }
+    .sensor-flow { left: -6px; top: -16px; } .sensor-position { right: -7px; bottom: -17px; }
+    .sensor-level, .sensor-soil { right: 8px; top: 7px; }
+    .tooltip { visibility: hidden; opacity: 0; position: absolute; z-index: 30; left: 0; bottom: calc(100% + 7px); width: 215px; padding: 9px; border: 1px solid rgba(92,225,212,.35); border-radius: 8px; background: #071c20; color: #a9c3bf; font-size: 7px; line-height: 1.5; box-shadow: 0 12px 30px rgba(0,0,0,.35); pointer-events: none; transition: .18s; }
+    .tooltip strong { color: #e7faf7; font-size: 8px; margin-bottom: 3px; }
+    .sensor-node:hover .tooltip, .sensor-node:focus .tooltip, .actuator-node:hover .tooltip, .actuator-node:focus .tooltip { visibility: visible; opacity: 1; }
+
+    .branch-hub { position: relative; height: 24px; width: 2px; margin: 0 auto; background: rgba(67,191,255,.28); overflow: hidden; }
+    .branch-hub::after { content:""; position:absolute; left:-2px; top:-8px; width:6px; height:8px; border-radius:4px; background:#d5f7ff; animation:pipeDown 1.1s linear infinite; }
+    .routes { display: grid; grid-template-columns: repeat(3,1fr); gap: 9px; }
+    .route { position: relative; min-height: 212px; padding: 10px; border: 1px solid var(--line); border-radius: 11px; background: rgba(9,31,35,.94); opacity: .34; transition: .3s; }
+    .route.active { opacity: 1; border-color: var(--route-color); box-shadow: 0 0 18px color-mix(in srgb,var(--route-color) 14%,transparent); }
+    .route-line { position: relative; width: 72%; height: 3px; margin: -10px auto 10px; border-radius: 5px; background: rgba(93,130,130,.22); overflow: hidden; }
+    .route.active .route-line::after { content:""; position:absolute; left:-25px; width:22px; height:3px; background:#e5fbff; box-shadow:0 0 9px var(--route-color); animation:routeFlow 1.25s linear infinite; }
+    .route-head { display:flex; align-items:flex-start; justify-content:space-between; gap:7px; }
+    .route-title { color: var(--route-color); font-size:8px; letter-spacing:.08em; font-weight:900; }
+    .route-litres { font-size:14px; font-weight:900; }
+    .route-copy { min-height: 28px; margin:5px 0 7px; color:#799692; font-size:6px; line-height:1.4; }
+    .route-visual { height: 104px; display:grid; place-items:center; position:relative; overflow:visible; border-radius:8px; background:rgba(5,22,25,.63); }
+    .tank { width:76px; height:87px; position:relative; overflow:hidden; border:3px solid #8ea7aa; border-radius:14px 14px 9px 9px; background:#091c20; }
+    .tank::before { content:"TANK"; position:absolute; z-index:3; left:0; right:0; top:8px; color:rgba(255,255,255,.7); text-align:center; font-size:7px; font-weight:900; letter-spacing:.12em; }
+    .tank-water { position:absolute; left:0; right:0; bottom:0; height:var(--tank-after); background:linear-gradient(#4cc9ef,#166aa4); transition:height 1.3s; }
+    .tank-water::after { content:""; position:absolute; left:-20%; top:-4px; width:140%; height:9px; border-radius:50%; background:rgba(220,250,255,.42); animation:wave 2s ease-in-out infinite; }
+    .tank-live-level { position:absolute; z-index:5; left:4px; bottom:4px; padding:3px 4px; border-radius:4px; background:rgba(4,18,21,.75); color:#c9f5ff; font-size:6px; font-weight:900; }
+    .soil-box { position:absolute; inset:0; overflow:hidden; border-radius:8px; }
+    .ground { position:absolute; inset:auto 0 0; height:76%; background:linear-gradient(#856c45 0 20%,#5e563f 20% 45%,#414f45 45% 70%,#263e3b 70%); }
+    .recharge-well { position:absolute; z-index:2; left:46%; top:7px; width:16px; height:87px; border:3px solid #94aaa3; border-top:0; background:rgba(18,55,56,.72); }
+    .infiltration { position:absolute; z-index:4; left:50%; top:8px; width:6px; height:6px; border-radius:50%; background:#b0f4e8; box-shadow:0 0 8px var(--green); animation:infiltrate 2s linear infinite; }
+    .infiltration.i2 { animation-delay:.65s; } .infiltration.i3 { animation-delay:1.25s; }
+    .drain-box { position:absolute; inset:0; overflow:hidden; background:linear-gradient(#132a2e 0 58%,#343b3b 58%); }
+    .drain-pipe { position:absolute; left:5%; right:30%; top:30px; height:25px; border:3px solid #87999a; border-radius:15px 0 0 15px; background:#65777a; }
+    .drain-pipe::after { content:""; position:absolute; right:-18px; top:3px; width:22px; height:14px; border-radius:0 50% 50% 0; background:@@DOWNSTREAM_COLOR@@; animation:discharge 1.2s ease-in-out infinite; }
+    .channel { position:absolute; left:55%; right:-10%; top:62px; height:15px; border-radius:10px; background:linear-gradient(90deg,@@DOWNSTREAM_COLOR@@,rgba(67,191,255,.24)); transform:rotate(10deg); }
+    .route-status { margin-top:5px; color:var(--route-color); text-align:center; font-size:6px; letter-spacing:.07em; font-weight:900; }
+    .actuator-node { position:absolute; z-index:9; left:50%; bottom:-11px; transform:translateX(-50%); padding:4px 7px; border:1px solid rgba(247,189,88,.4); border-radius:6px; color:#f6d99f; background:#171309; font-size:6px; font-weight:900; cursor:help; white-space:nowrap; }
+
+    .legend { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:8px; padding:8px 10px; border:1px solid rgba(135,222,205,.11); border-radius:9px; color:#799792; font-size:7px; }
+    .legend b { color:#b9d6d1; } .legend .cyan { color:var(--cyan); } .legend .amber { color:var(--amber); } .legend .blue { color:var(--blue); } .legend .green { color:var(--green); }
+    .disclosure { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:8px; color:#6f8d89; font-size:7px; line-height:1.45; }
+    .disclosure strong { color:#adc8c4; }
+    .final-frame { display:none; margin-top:9px; padding:12px; border:1px solid rgba(105,211,156,.3); border-radius:10px; background:linear-gradient(120deg,rgba(24,82,76,.26),rgba(8,31,35,.8)); text-align:center; }
+    .final-frame h3 { margin:0; color:#dcfff6; font-size:15px; letter-spacing:.01em; }
+    .final-loop { margin:7px 0; color:var(--cyan); font-size:10px; letter-spacing:.08em; font-weight:900; }
+    .final-frame p { max-width:900px; margin:0 auto; color:#97b5b0; font-size:8px; line-height:1.55; }
+
+    /* Readable type scale: presentation labels never rely on sub-9px text. */
+    .eyebrow { font-size:10px; }
+    h2 { font-size:clamp(20px,2.2vw,26px); line-height:1.12; }
+    .subtitle { font-size:13px; line-height:1.55; }
+    .pill { font-size:10px; }
+    .control-button, .mode-button { min-height:36px; font-size:11px; }
+    .step-indicator, .data-toggle { font-size:10.5px; }
+    .scene-title { font-size:12px; }
+    .scene-caption { font-size:12px; line-height:1.5; }
+    .engineering-loop-title { font-size:12px; }
+    .engineering-loop-title span { font-size:9px; }
+    .engineering-loop-order { font-size:10px; }
+    .engineering-card { min-height:116px; padding:10px; }
+    .engineering-icon { flex-basis:28px; width:28px; height:28px; font-size:13px; }
+    .engineering-role { font-size:9.5px; letter-spacing:.09em; }
+    .engineering-name { font-size:12px; }
+    .engineering-copy { font-size:10.5px; line-height:1.48; }
+    .engineering-result { font-size:9.5px; line-height:1.35; }
+    .feedback-return::before { font-size:9px; }
+    .world-label { font-size:10px; }
+    .world-label span { font-size:9.5px; }
+    .digital-layer { min-height:305px; }
+    .tech-card { min-height:252px; padding:13px; }
+    .tech-kicker { font-size:9.5px; }
+    .tech-title { font-size:13px; }
+    .tech-chip { font-size:9px; }
+    .telemetry-reading { padding:7px 8px; }
+    .telemetry-reading small { font-size:9.5px; }
+    .telemetry-reading strong { font-size:12px; }
+    .aggregate-packet { font-size:9px; line-height:1.35; }
+    .brain-step b { font-size:10px; }
+    .brain-step span { font-size:10px; line-height:1.3; }
+    .rule { font-size:9.5px; line-height:1.35; }
+    .decision-result small { font-size:9px; }
+    .decision-result strong { font-size:18px; }
+    .reason-list li { font-size:9px; }
+    .command-packet small { font-size:9px; }
+    .command-packet strong { font-size:14px; overflow-wrap:anywhere; }
+    .hardware-icon { width:24px; height:24px; font-size:10px; }
+    .hardware-copy b { font-size:10px; }
+    .hardware-copy span { font-size:10px; line-height:1.3; }
+    .verify-status { font-size:10px; }
+    .boundary-label, .lane-label { font-size:10px; }
+    .physical-layer { min-height:575px; }
+    .stage { min-height:150px; }
+    .stage-label { font-size:11px; }
+    .stage-detail { font-size:9.5px; line-height:1.4; }
+    .actuator-badge { font-size:9px; }
+    .router-live-state { font-size:9px; }
+    .sensor-node { min-width:92px; padding:6px 7px 6px 20px; }
+    .sensor-node small { font-size:9px; }
+    .sensor-node strong { font-size:10px; }
+    .sensor-node b { font-size:11px; }
+    .tooltip { width:255px; padding:11px; font-size:10px; line-height:1.55; }
+    .tooltip strong { font-size:11px; }
+    .route { min-height:244px; padding:12px; }
+    .route-title { font-size:11px; }
+    .route-litres { font-size:16px; }
+    .route-copy { min-height:42px; font-size:10px; line-height:1.48; }
+    .tank::before, .tank-live-level { font-size:9px; }
+    .route-status, .actuator-node { font-size:9.5px; }
+    .legend { font-size:10px; line-height:1.4; }
+    .disclosure { font-size:10px; line-height:1.5; }
+    .final-frame h3 { font-size:18px; }
+    .final-loop { font-size:12px; }
+    .final-frame p { font-size:11px; }
+
+    .data-hidden .digital-layer, .data-hidden .control-bridge, .data-hidden .sensor-node, .data-hidden .engineering-loop { display:none; }
+    .data-hidden { min-height:770px; }
+    .mode-physical .digital-layer, .mode-physical .control-bridge, .mode-physical .sensor-node { display:none; }
+    .mode-physical { min-height:770px; }
+    .mode-digital .physical-layer { opacity:.30; filter:saturate(.45); }
+    .mode-digital .stage::before, .mode-digital .route-line::after, .mode-digital .rain, .mode-digital .gutter::after, .mode-digital .tank-water::after, .mode-digital .infiltration { animation-play-state:paused; opacity:.18; }
+
+    .story-active .tech-card, .story-active .stage, .story-active .route, .story-active .control-bridge { opacity:.19; filter:saturate(.55); }
+    .story-active[data-scene="0"] .physical-layer .stage, .story-active[data-scene="0"] .route.active { opacity:1; filter:none; }
+    .story-active[data-scene="1"] .physical-layer .stage, .story-active[data-scene="1"] .route { opacity:.46; filter:none; }
+    .story-active[data-scene="1"] .sensor-node { border-color:var(--cyan); box-shadow:0 0 21px rgba(92,225,212,.35); transform:scale(1.04); }
+    .story-active[data-scene="2"] .edge-card, .story-active[data-scene="2"] .control-bridge { opacity:1; filter:none; border-color:var(--cyan); }
+    .story-active[data-scene="3"] .edge-card, .story-active[data-scene="3"] .brain-card { opacity:1; filter:none; }
+    .story-active[data-scene="3"] .brain-step:nth-child(1), .story-active[data-scene="3"] .brain-step:nth-child(2) { border-color:var(--cyan); box-shadow:0 0 12px rgba(92,225,212,.16); }
+    .story-active[data-scene="4"] .brain-card { opacity:1; filter:none; border-color:var(--green); box-shadow:0 0 25px rgba(105,211,156,.18); }
+    .story-active[data-scene="4"] .brain-step:nth-child(3), .story-active[data-scene="4"] .decision-result { border-color:var(--green); box-shadow:0 0 12px rgba(105,211,156,.16); }
+    .story-active[data-scene="4"] .reason-list { display:block; }
+    .story-active[data-scene="5"] .brain-card, .story-active[data-scene="5"] .command-card, .story-active[data-scene="5"] .control-bridge { opacity:1; filter:none; }
+    .story-active[data-scene="5"] .command-lane { width:4px; box-shadow:0 0 14px rgba(247,189,88,.38); }
+    .story-active[data-scene="6"] .command-card, .story-active[data-scene="6"] .control-bridge, .story-active[data-scene="6"] .stage:last-child, .story-active[data-scene="6"] .route.active { opacity:1; filter:none; }
+    .story-active[data-scene="6"] .router-needle { animation:actuate 1.9s ease forwards; }
+    .story-active[data-scene="6"] .tank-water { animation:tankFill 2.4s ease forwards; }
+    .story-active[data-scene="7"] .edge-card, .story-active[data-scene="7"] .brain-card, .story-active[data-scene="7"] .command-card, .story-active[data-scene="7"] .control-bridge, .story-active[data-scene="7"] .stage:last-child, .story-active[data-scene="7"] .route.active { opacity:1; filter:none; }
+    .story-active[data-scene="7"] .final-frame { display:block; animation:fadeIn .5s ease both; }
+    .story-active[data-scene="7"] .verify-status { color:var(--green); border:1px solid rgba(105,211,156,.32); box-shadow:0 0 14px rgba(105,211,156,.12); }
+    .story-active .engineering-card { opacity:.26; animation:none; filter:saturate(.55); }
+    .story-active[data-scene="1"] .engineering-card.sensor,
+    .story-active[data-scene="2"] .engineering-card.sensor,
+    .story-active[data-scene="2"] .engineering-card.software,
+    .story-active[data-scene="3"] .engineering-card.software,
+    .story-active[data-scene="4"] .engineering-card.software,
+    .story-active[data-scene="5"] .engineering-card.plc,
+    .story-active[data-scene="6"] .engineering-card.actuator,
+    .story-active[data-scene="7"] .engineering-card.feedback { opacity:1; filter:none; border-color:var(--step-color); box-shadow:0 0 18px color-mix(in srgb,var(--step-color) 18%,transparent); }
+
+    @keyframes sensorPulse { 0%{box-shadow:0 0 0 0 rgba(92,225,212,.55)} 70%{box-shadow:0 0 0 8px rgba(92,225,212,0)} 100%{box-shadow:0 0 0 0 rgba(92,225,212,0)} }
+    @keyframes packetPulse { 0%,100%{transform:scale(.75);opacity:.6} 50%{transform:scale(1.15);opacity:1} }
+    @keyframes commandScan { to{left:110%} }
+    @keyframes telemetryUp { from{bottom:0;opacity:0} 15%{opacity:1} 85%{opacity:1} to{bottom:calc(100% - 8px);opacity:0} }
+    @keyframes commandDown { from{top:0;opacity:0;transform:scale(.8)} 18%{opacity:1} 82%{opacity:1;transform:scale(1.15)} to{top:calc(100% - 8px);opacity:0} }
+    @keyframes waterAcross { 0%,42%{transform:translateX(0);opacity:0} 48%{opacity:1} 72%{transform:translateX(12px);opacity:1} 78%,100%{opacity:0} }
+    @keyframes rainFall { from{transform:translateY(0);opacity:0} 20%{opacity:1} to{transform:translateY(28px);opacity:0} }
+    @keyframes pipeDown { to{transform:translateY(42px)} }
+    @keyframes chamberLevel { 0%,100%{height:35%} 50%{height:58%} }
+    @keyframes gatePulse { 0%,100%{box-shadow:0 0 0 transparent} 50%{box-shadow:0 0 18px color-mix(in srgb,@@GATE_COLOR@@ 35%,transparent)} }
+    @keyframes routeFlow { to{left:110%} }
+    @keyframes wave { 0%,100%{transform:translateX(-6%)} 50%{transform:translateX(6%)} }
+    @keyframes infiltrate { from{transform:translate(-50%,0);opacity:0} 18%{opacity:1} to{transform:translate(-50%,88px) scale(.35);opacity:0} }
+    @keyframes discharge { 0%,100%{transform:scaleX(.7);opacity:.55} 50%{transform:scaleX(1.25);opacity:1} }
+    @keyframes actuate { 0%{transform:rotate(0deg)} 42%{transform:rotate(16deg)} 100%{transform:rotate(var(--route-angle))} }
+    @keyframes tankFill { from{height:var(--tank-before)} to{height:var(--tank-after)} }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+    @keyframes engineeringFocus { 0%,15%{opacity:1;transform:translateY(-2px);border-color:var(--step-color);box-shadow:0 0 17px color-mix(in srgb,var(--step-color) 18%,transparent)} 21%,100%{opacity:.62;transform:none;box-shadow:none} }
+    @keyframes handoffTravel { 0%{left:7%;background:var(--cyan);box-shadow:0 0 12px rgba(92,225,212,.72)} 36%{background:var(--cyan)} 44%{background:var(--green)} 76%{background:var(--amber);box-shadow:0 0 13px rgba(247,189,88,.74)} 100%{left:92%;background:var(--green);box-shadow:0 0 13px rgba(105,211,156,.72)} }
+    @keyframes feedbackReturn { 0%,83%{right:0;opacity:0} 86%{opacity:1} 100%{right:calc(100% - 8px);opacity:0} }
+    @keyframes miniActuator { 0%,18%{transform:rotate(0deg)} 58%,100%{transform:rotate(var(--route-angle))} }
+
+    @media (max-width: 850px) {
+      .system-shell { overflow:auto; min-height:1500px; }
+      .header, .control-deck { grid-template-columns:1fr; flex-direction:column; }
+      .status-stack { justify-content:flex-start; }
+      .control-deck { display:grid; }
+      .digital-grid { grid-template-columns:1fr; }
+      .pipeline { grid-template-columns:repeat(3,1fr); gap:10px; }
+      .stage::after, .stage::before { display:none; }
+      .routes { grid-template-columns:1fr; }
+      .route { min-height:190px; }
+      .scene-panel { grid-template-columns:1fr; }
+      .engineering-loop-header { align-items:flex-start; flex-direction:column; }
+      .engineering-loop-order { text-align:left; }
+      .engineering-sequence { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; padding-bottom:0; }
+      .engineering-sequence::before, .handoff-packet, .feedback-return { display:none; }
+      .engineering-card:last-of-type { grid-column:1 / -1; }
+      .engineering-card:not(:last-of-type)::after { display:none; }
+      .telemetry-lane { left:12%; } .command-lane { right:12%; }
+    }
+    @media (max-width: 560px) {
+      .engineering-sequence { grid-template-columns:1fr; }
+      .engineering-card:last-of-type { grid-column:auto; }
+      .pipeline { grid-template-columns:1fr 1fr; }
+      .world-label span { display:block; margin:2px 0 0; }
+    }
+    @media (prefers-reduced-motion:reduce) { * { animation-duration:.001ms !important; animation-iteration-count:1 !important; } }
+  </style>
+</head>
+<body>
+  <main class="system-shell mode-combined" id="system-shell" data-scene="complete">
+    <header class="header">
+      <div>
+        <div class="eyebrow">SIMULATED CLOSED-LOOP SYSTEM · NO PHYSICAL IOT SENSOR CONNECTED</div>
+        <h2>Water + sensors + software + mechanical control</h2>
+        <div class="subtitle">The software is the decision layer—not the physical water system. Simulated sensors describe field conditions; the edge controller communicates them; the Explainable Decision Engine selects a route; controllers translate that route into a simulated actuator command; feedback verifies the physical result.</div>
+      </div>
+      <div class="status-stack">
+        <span class="pill">NODE: @@NODE_NAME@@</span>
+        <span class="pill">SELECTED: @@ACTION@@</span>
+        <span class="pill warn">SIMULATED COMMANDS</span>
+      </div>
+    </header>
+
+    <section class="control-deck" aria-label="Explainer controls">
+      <div class="story-controls">
+        <button class="control-button primary" id="play-story" type="button">Play System Story</button>
+        <button class="control-button" id="pause-story" type="button">Pause</button>
+        <button class="control-button" id="restart-story" type="button">Restart</button>
+        <button class="control-button" id="next-step" type="button">Next Step</button>
+        <span class="step-indicator" id="step-indicator">READY · 8 SCENES</span>
+      </div>
+      <div class="mode-controls" role="group" aria-label="View mode">
+        <button class="mode-button" data-mode="physical" type="button">Physical</button>
+        <button class="mode-button" data-mode="digital" type="button">Digital</button>
+        <button class="mode-button active" data-mode="combined" type="button">Combined</button>
+      </div>
+      <div class="story-controls">
+        <label class="data-toggle"><input id="data-flow-toggle" type="checkbox" checked>Show Data Flow</label>
+        <button class="control-button" id="explain-system" type="button">Explain System ⛶</button>
+      </div>
+    </section>
+
+    <section class="scene-panel" aria-live="polite">
+      <div class="scene-title" id="scene-title">COMPLETE CLOSED LOOP</div>
+      <div class="scene-caption" id="scene-caption">Select Play System Story to follow the eight-scene sequence from rainfall to verified mechanical action.</div>
+    </section>
+
+    <section class="engineering-loop" aria-label="Animated engineering distinction">
+      <div class="engineering-loop-header">
+        <div class="engineering-loop-title"><span>ENGINEERING DISTINCTION · FOLLOW THE SIGNAL</span>How information becomes physical action</div>
+        <div class="engineering-loop-order">MEASURE → DECIDE → TRANSLATE → ACT → VERIFY</div>
+      </div>
+      <div class="engineering-sequence">
+        <i class="handoff-packet" aria-hidden="true"></i>
+        <article class="engineering-card sensor" style="--handoff-delay:0s">
+          <div class="engineering-card-head"><span class="engineering-icon">●</span><div><div class="engineering-role">1 · SENSOR · MEASURE</div><div class="engineering-name">Reads the physical world</div></div></div>
+          <div class="engineering-copy">Rainfall, quality, tank, soil, flow and router-position readings become telemetry.</div>
+          <div class="engineering-result">INFORMATION INTO SOFTWARE ↑</div>
+        </article>
+        <article class="engineering-card software" style="--handoff-delay:2s">
+          <div class="engineering-card-head"><span class="engineering-icon">◆</span><div><div class="engineering-role">2 · SOFTWARE · DECIDE</div><div class="engineering-name">Selects the safe route</div></div></div>
+          <div class="engineering-copy">Safety gates and capacity rules select STORE, RECHARGE or controlled downstream routing.</div>
+          <div class="engineering-result">DECISION: @@ACTION@@</div>
+        </article>
+        <article class="engineering-card plc" style="--handoff-delay:4s">
+          <div class="engineering-card-head"><span class="engineering-icon">E</span><div><div class="engineering-role">3 · EDGE / PLC · TRANSLATE</div><div class="engineering-name">Validates and interlocks</div></div></div>
+          <div class="engineering-copy">The controller checks the command, applies interlocks and drives a relay or motor controller.</div>
+          <div class="engineering-result">@@COMMAND@@ ↓</div>
+        </article>
+        <article class="engineering-card actuator" style="--handoff-delay:6s">
+          <div class="engineering-card-head"><span class="engineering-icon">◉</span><div><div class="engineering-role">4 · ACTUATOR · ACT</div><div class="engineering-name">Changes the physical world</div></div></div>
+          <div class="engineering-copy">Electrical power rotates the motorized valve; the water path physically moves to @@ROUTER_TARGET@@.</div>
+          <div class="engineering-result">WATER ROUTE CHANGES</div>
+        </article>
+        <article class="engineering-card feedback" style="--handoff-delay:8s">
+          <div class="engineering-card-head"><span class="engineering-icon">✓</span><div><div class="engineering-role">5 · FEEDBACK · VERIFY</div><div class="engineering-name">Confirms the result</div></div></div>
+          <div class="engineering-copy">Flow and router-position sensors report what actually happened—not merely what was commanded.</div>
+          <div class="engineering-result" id="engineering-verify">WATCH FOR VERIFICATION</div>
+        </article>
+        <div class="feedback-return" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section class="world digital-layer" aria-label="Digital and software world">
+      <div class="world-label">TOP · DIGITAL / SOFTWARE WORLD <span>data, rules, commands</span></div>
+      <div class="digital-grid">
+        <article class="tech-card edge-card">
+          <div class="tech-card-header"><div><div class="tech-kicker">FIELD COMMUNICATION</div><div class="tech-title">EDGE CONTROLLER / IoT GATEWAY</div></div><span class="tech-chip">SIMULATED</span></div>
+          <div class="telemetry-table">
+            <div class="telemetry-reading"><small>RAINFALL</small><strong>@@RAINFALL@@ mm/hr</strong></div>
+            <div class="telemetry-reading"><small>TANK LEVEL</small><strong><span class="edge-level">@@TANK_BEFORE@@</span>%</strong></div>
+            <div class="telemetry-reading"><small>SOIL</small><strong>@@SOIL@@%</strong></div>
+            <div class="telemetry-reading"><small>QUALITY</small><strong>@@QUALITY_SHORT@@</strong></div>
+            <div class="telemetry-reading"><small>FLOW</small><strong>@@FLOW@@ L/s</strong></div>
+            <div class="telemetry-reading"><small>ROUTER</small><strong class="edge-router">@@ROUTER_TARGET@@</strong></div>
+          </div>
+          <div class="aggregate-packet">NODE TELEMETRY · normalized sensor packet → software</div>
+        </article>
+
+        <article class="tech-card brain-card">
+          <div class="tech-card-header"><div><div class="tech-kicker">CHENNAI WATER BANK SOFTWARE</div><div class="tech-title">EXPLAINABLE DECISION ENGINE</div></div><span class="tech-chip">RULES + ENGINEERING</span></div>
+          <div class="brain-steps">
+            <div class="brain-step"><b>1 · OBSERVE</b><span>Receive telemetry</span></div>
+            <div class="brain-step"><b>2 · EVALUATE</b><span>Safety + capacity</span></div>
+            <div class="brain-step"><b>3 · DECIDE</b><span>Select destination</span></div>
+            <div class="brain-step"><b>4 · COMMAND</b><span>Issue instruction</span></div>
+          </div>
+          <div class="rule-grid">
+            <div class="rule"><span>Quality check</span><b>@@QUALITY_SHORT@@</b></div>
+            <div class="rule"><span>Available storage</span><b>@@AVAILABLE_STORAGE@@ kL</b></div>
+            <div class="rule"><span>Soil saturation</span><b>@@SOIL@@%</b></div>
+            <div class="rule"><span>Drain stress</span><b>@@DRAIN_STRESS@@%</b></div>
+            <div class="rule"><span>Incoming runoff</span><b>@@INCOMING_L@@ L</b></div>
+            <div class="rule"><span>Water retained</span><b>@@STORED_L@@ + @@RECHARGED_L@@ L</b></div>
+          </div>
+          <div class="decision-result"><small>SELECTED ACTION</small><strong>@@ACTION@@</strong></div>
+          <ul class="reason-list">@@REASONS_HTML@@</ul>
+        </article>
+
+        <article class="tech-card command-card">
+          <div class="tech-card-header"><div><div class="tech-kicker">SOFTWARE → HARDWARE</div><div class="tech-title">CONTROL TRANSLATION</div></div><span class="tech-chip">ACT</span></div>
+          <div class="command-packet"><small>CONTROL COMMAND</small><strong>@@COMMAND@@</strong></div>
+          <div class="hardware-chain">
+            <div class="hardware-node"><span class="hardware-icon">E</span><div class="hardware-copy"><b>Edge Controller / PLC</b><span>Validates command and interlocks</span></div></div>
+            <div class="hardware-node"><span class="hardware-icon">D</span><div class="hardware-copy"><b>Motor Driver / Relay</b><span>Converts logic into electrical power</span></div></div>
+            <div class="hardware-node"><span class="hardware-icon">A</span><div class="hardware-copy"><b>Motorized Valve / Router</b><span>Physically changes the water destination</span></div></div>
+          </div>
+          <div class="verify-status" id="verify-status">AWAITING FEEDBACK</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="control-bridge" aria-label="Telemetry and control boundary">
+      <div class="telemetry-lane"><span class="lane-label">TELEMETRY ↑</span><i class="data-packet"></i><i class="data-packet p2"></i><i class="data-packet p3"></i></div>
+      <div class="boundary-label">EDGE BOUNDARY · PHYSICAL ↔ DIGITAL</div>
+      <div class="command-lane"><span class="lane-label">CONTROL COMMAND ↓</span><i class="control-pulse"></i></div>
+    </section>
+
+    <section class="world physical-layer" aria-label="Physical water world">
+      <div class="world-label">BOTTOM · PHYSICAL WATER WORLD <span>water, pipes, tanks, soil, actuators</span></div>
+      <div class="pipeline">
+        <article class="stage" style="--water-delay:0s">
+          <div class="sensor-node sensor-rain" tabindex="0"><small>SIM SENSOR · MEASURE</small><strong>RAINFALL</strong><b>@@RAINFALL@@ mm/hr</b><span class="tooltip"><strong>Rainfall Sensor</strong>Measures rainfall intensity at the catchment. The software uses it to estimate incoming runoff conditions.</span></div>
+          <div class="visual"><div class="cloud"></div><i class="rain r1"></i><i class="rain r2"></i><i class="rain r3"></i></div><div class="stage-label">RAINFALL</div><div class="stage-detail">Simulated storm input</div>
+        </article>
+        <article class="stage" style="--water-delay:.5s"><div class="visual"><div class="roof"></div><div class="gutter"></div></div><div class="stage-label">ROOF / CATCHMENT</div><div class="stage-detail">Gutters collect calculated runoff</div></article>
+        <article class="stage" style="--water-delay:1s"><div class="visual"><div class="chamber"><div class="screen"></div><div class="chamber-water"></div></div></div><div class="stage-label">FIRST FLUSH</div><div class="stage-detail">Initial pollutant load isolated</div></article>
+        <article class="stage" style="--water-delay:1.5s"><div class="visual"><div class="filter"><div class="media three"></div><div class="media two"></div><div class="media one"></div></div></div><div class="stage-label">FILTRATION</div><div class="stage-detail">Illustrative treatment train</div></article>
+        <article class="stage" style="--water-delay:2s">
+          <div class="sensor-node sensor-quality" tabindex="0"><small>SIM SENSOR · MEASURE</small><strong>WATER QUALITY</strong><b>@@TURBIDITY@@ NTU · pH @@PH@@</b><span class="tooltip"><strong>Water Quality Sensor</strong>Measures simulated turbidity and pH after filtration. The safety gate uses these values to determine which destinations may be considered.</span></div>
+          <div class="visual"><div class="quality-gate">@@GATE_SYMBOL@@</div></div><div class="stage-label">QUALITY GATE</div><div class="stage-detail">@@GATE_DETAIL@@</div>
+        </article>
+        <article class="stage" style="--water-delay:2.5s">
+          <div class="sensor-node sensor-flow" tabindex="0"><small>SIM SENSOR · MEASURE</small><strong>FLOW METER</strong><b>@@FLOW@@ L/s</b><span class="tooltip"><strong>Flow Sensor</strong>Confirms that water is physically moving after a routing command. A decision is not considered verified from software state alone.</span></div>
+          <div class="sensor-node sensor-position" tabindex="0"><small>SIM SENSOR · VERIFY</small><strong>ROUTER POSITION</strong><b class="sensor-router-state">@@ROUTER_TARGET@@</b><span class="tooltip"><strong>Router Position Feedback</strong>Measures the actuator's actual position and confirms whether the valve reached the commanded route.</span></div>
+          <div class="visual"><div class="router-body"><div class="router-needle"></div><span class="actuator-badge">ACTUATOR</span></div><div class="router-live-state" id="router-live-state">@@ROUTER_TARGET@@</div></div><div class="stage-label">MOTORIZED ROUTER</div><div class="stage-detail">Edge-controlled physical actuator</div>
+          <div class="actuator-node" tabindex="0">◉ ACT · MOTOR / VALVE<span class="tooltip"><strong>Motorized Router — Actuator</strong>Receives an electrical command from the edge controller through a motor driver or relay, then physically changes the destination of water. The web application does not directly power the motor.</span></div>
+        </article>
+      </div>
+      <div class="branch-hub"></div>
+
+      <div class="routes">
+        <article class="route @@STORE_CLASS@@" style="--route-color:#4aa8ff">
+          <div class="route-line"></div><div class="route-head"><div class="route-title">STORE</div><div class="route-litres">@@STORED_L@@ L</div></div><div class="route-copy">Suitable water enters a sealed tank or underground sump for later treatment and appropriate non-potable use.</div>
+          <div class="route-visual"><div class="sensor-node sensor-level" tabindex="0"><small>SIM SENSOR · MEASURE</small><strong>TANK LEVEL</strong><b><span class="level-reading">@@TANK_AFTER@@</span>%</b><span class="tooltip"><strong>Tank Level Sensor</strong>Measures current stored volume. The decision engine needs this reading before routing more runoff into a finite-capacity tank.</span></div><div class="tank"><div class="tank-water"></div></div><span class="tank-live-level"><span class="level-reading">@@TANK_AFTER@@</span>%</span></div>
+          <div class="route-status">@@STORE_STATUS@@ · AFTER ROUTING @@TANK_AFTER@@%</div>
+        </article>
+        <article class="route @@RECHARGE_CLASS@@" style="--route-color:#69d39c">
+          <div class="route-line"></div><div class="route-head"><div class="route-title">MODELLED RECHARGE</div><div class="route-litres">@@RECHARGED_L@@ L</div></div><div class="route-copy">Only screened water may enter an engineered trench, percolation pit, or recharge well after site-specific treatment and approval.</div>
+          <div class="route-visual"><div class="sensor-node sensor-soil" tabindex="0"><small>SIM SENSOR · MEASURE</small><strong>SOIL SATURATION</strong><b>@@SOIL@@%</b><span class="tooltip"><strong>Soil Saturation Sensor</strong>Estimates whether the recharge zone can accept additional water. High saturation blocks the modelled recharge route.</span></div><div class="soil-box"><div class="ground"></div><div class="recharge-well"></div><i class="infiltration"></i><i class="infiltration i2"></i><i class="infiltration i3"></i></div></div>
+          <div class="route-status">@@RECHARGE_STATUS@@ · SOIL @@SOIL@@%</div>
+        </article>
+        <article class="route @@DOWNSTREAM_CLASS@@" style="--route-color:@@DOWNSTREAM_COLOR@@">
+          <div class="route-line"></div><div class="route-head"><div class="route-title">@@DOWNSTREAM_LABEL@@</div><div class="route-litres">@@DOWNSTREAM_L@@ L</div></div><div class="route-copy">@@DOWNSTREAM_DETAIL@@.</div>
+          <div class="route-visual"><div class="drain-box"><div class="drain-pipe"></div><div class="channel"></div></div></div><div class="route-status">@@DOWNSTREAM_STATUS@@</div>
+        </article>
+      </div>
+    </section>
+
+    <div class="legend" aria-label="System legend"><b>LEGEND</b><span class="cyan">● Sensor / telemetry</span><span class="cyan">↑ Data to software</span><span class="amber">↓ Control command</span><span class="amber">◉ Actuator</span><span class="blue">≈ Physical water</span><span class="green">✓ Verified state</span></div>
+    <div class="final-frame" id="final-frame"><h3>FROM RAINFALL TO DECISION TO PHYSICAL ACTION</h3><div class="final-loop">SENSE → UNDERSTAND → DECIDE → ACT → VERIFY</div><p>Chennai Water Bank connects physical water infrastructure with sensing, software intelligence and controlled mechanical routing. Sensors describe what is happening, software determines the appropriate response, controllers translate that decision into actuator commands, and feedback sensors verify the physical result.</p></div>
+    <div class="disclosure"><span><strong>SIMULATED SENSOR VALUES:</strong> generated from the current simulation/model. A deployed system would receive values from certified physical or industrial sensors.</span><span><strong>SIMULATED CONTROL:</strong> a deployed command would travel through an edge controller or PLC, motor driver or relay, and physical actuator.</span><span><strong>MODELLED RECHARGE WARNING:</strong> requires certified, site-specific testing, treatment design, hydrogeological review and regulatory approval.</span></div>
+  </main>
+
+  <script id="system-data" type="application/json">@@SYSTEM_DATA_JSON@@</script>
+  <script>
+    (() => {
+      const root = document.getElementById('system-shell');
+      const data = JSON.parse(document.getElementById('system-data').textContent);
+      const sceneTitle = document.getElementById('scene-title');
+      const sceneCaption = document.getElementById('scene-caption');
+      const indicator = document.getElementById('step-indicator');
+      const routerLive = document.getElementById('router-live-state');
+      const routerFeedback = document.querySelector('.sensor-router-state');
+      const edgeRouter = document.querySelector('.edge-router');
+      const edgeLevel = document.querySelector('.edge-level');
+      const levelReadings = [...document.querySelectorAll('.level-reading')];
+      const verifyStatus = document.getElementById('verify-status');
+      const engineeringVerify = document.getElementById('engineering-verify');
+      const modeButtons = [...document.querySelectorAll('[data-mode]')];
+      const dataToggle = document.getElementById('data-flow-toggle');
+      const scenes = [
+        { title:'1 — PHYSICAL PROCESS', duration:4200 },
+        { title:'2 — SENSE', duration:4200 },
+        { title:'3 — COMMUNICATE', duration:4200 },
+        { title:'4 — ANALYZE', duration:4700 },
+        { title:'5 — DECISION', duration:4700 },
+        { title:'6 — SOFTWARE COMMANDS HARDWARE', duration:4300 },
+        { title:'7 — MECHANICAL ACTION', duration:5000 },
+        { title:'8 — FEEDBACK / VERIFICATION', duration:6500 },
+      ];
+      let currentScene = -1;
+      let playing = false;
+      let sceneTimer = null;
+      let levelTimer = null;
+      let actuatorTimers = [];
+
+      const clearTimers = () => {
+        clearTimeout(sceneTimer);
+        clearInterval(levelTimer);
+        actuatorTimers.forEach(clearTimeout);
+        actuatorTimers = [];
+      };
+      const setMode = (mode) => {
+        root.classList.remove('mode-physical','mode-digital','mode-combined');
+        root.classList.add(`mode-${mode}`);
+        modeButtons.forEach(button => button.classList.toggle('active', button.dataset.mode === mode));
+        if (mode === 'physical') dataToggle.checked = false;
+        if (mode === 'combined') dataToggle.checked = true;
+        root.classList.toggle('data-hidden', !dataToggle.checked);
+      };
+      const resetPhysicalReadings = () => {
+        routerLive.textContent = 'NEUTRAL';
+        routerFeedback.textContent = 'NEUTRAL';
+        edgeRouter.textContent = 'NEUTRAL';
+        levelReadings.forEach(node => node.textContent = Math.round(data.tankBefore));
+        edgeLevel.textContent = Math.round(data.tankBefore);
+        verifyStatus.textContent = 'AWAITING FEEDBACK';
+        verifyStatus.classList.remove('verified');
+        engineeringVerify.textContent = 'AWAITING PHYSICAL RESULT';
+      };
+      const showCurrentResult = () => {
+        routerLive.textContent = data.routerTarget;
+        routerFeedback.textContent = data.routerTarget;
+        edgeRouter.textContent = data.routerTarget;
+        levelReadings.forEach(node => node.textContent = Math.round(data.tankAfter));
+        edgeLevel.textContent = Math.round(data.tankAfter);
+      };
+      const animateActuator = () => {
+        resetPhysicalReadings();
+        actuatorTimers.push(setTimeout(() => { routerLive.textContent = 'ROTATING…'; }, 500));
+        actuatorTimers.push(setTimeout(() => {
+          routerLive.textContent = data.routerTarget;
+          routerFeedback.textContent = data.routerTarget;
+        }, 1900));
+        const start = data.tankBefore;
+        const end = data.tankAfter;
+        let tick = 0;
+        levelTimer = setInterval(() => {
+          tick += 1;
+          const value = start + (end - start) * Math.min(1, tick / 8);
+          levelReadings.forEach(node => node.textContent = Math.round(value));
+          if (tick >= 8) clearInterval(levelTimer);
+        }, 260);
+      };
+      const showVerification = () => {
+        showCurrentResult();
+        verifyStatus.textContent = 'COMMAND VERIFIED ✓';
+        verifyStatus.classList.add('verified');
+        engineeringVerify.textContent = 'COMMAND VERIFIED ✓';
+      };
+      const setScene = (index) => {
+        clearTimers();
+        currentScene = Math.max(0, Math.min(scenes.length - 1, index));
+        const scene = scenes[currentScene];
+        root.classList.add('story-active');
+        root.classList.remove('paused');
+        root.dataset.scene = String(currentScene);
+        setMode('combined');
+        dataToggle.checked = true;
+        root.classList.remove('data-hidden');
+        sceneTitle.textContent = scene.title;
+        sceneCaption.textContent = data.captions[currentScene];
+        indicator.textContent = `STEP ${currentScene + 1} / ${scenes.length}`;
+        if (currentScene < 6) resetPhysicalReadings();
+        if (currentScene === 6) animateActuator();
+        if (currentScene === 7) showVerification();
+      };
+      const schedule = () => {
+        if (!playing) return;
+        if (currentScene >= scenes.length - 1) {
+          sceneTimer = setTimeout(() => {
+            playing = false;
+            indicator.textContent = 'COMPLETE · VERIFIED';
+          }, scenes[currentScene].duration);
+          return;
+        }
+        sceneTimer = setTimeout(() => {
+          setScene(currentScene + 1);
+          schedule();
+        }, scenes[currentScene].duration);
+      };
+      const play = (restart = false) => {
+        clearTimers();
+        if (restart || currentScene < 0 || currentScene >= scenes.length - 1) setScene(0);
+        root.classList.remove('paused');
+        playing = true;
+        schedule();
+      };
+      const pause = () => {
+        clearTimers();
+        playing = false;
+        root.classList.add('paused');
+        indicator.textContent = currentScene < 0 ? 'READY · PAUSED' : `STEP ${currentScene + 1} / 8 · PAUSED`;
+      };
+
+      document.getElementById('play-story').addEventListener('click', () => play(false));
+      document.getElementById('pause-story').addEventListener('click', pause);
+      document.getElementById('restart-story').addEventListener('click', () => play(true));
+      document.getElementById('next-step').addEventListener('click', () => {
+        clearTimers(); playing = false; setScene(currentScene < 0 ? 0 : Math.min(7,currentScene + 1)); root.classList.add('paused');
+      });
+      document.getElementById('explain-system').addEventListener('click', async () => {
+        try { await root.requestFullscreen(); } catch (error) { /* Fullscreen may be blocked by host policy. */ }
+        play(true);
+      });
+      modeButtons.forEach(button => button.addEventListener('click', () => {
+        clearTimers(); playing = false; root.classList.remove('story-active','paused'); root.dataset.scene = 'complete'; setMode(button.dataset.mode); showCurrentResult(); sceneTitle.textContent = `${button.dataset.mode.toUpperCase()} VIEW`; sceneCaption.textContent = button.dataset.mode === 'physical' ? 'Water movement, treatment stages, storage, recharge, discharge, and the physical actuator.' : button.dataset.mode === 'digital' ? 'Sensor telemetry, the edge gateway, explainable decision stages, control command, and verification.' : 'The complete integration of the physical water system and the digital control loop.'; indicator.textContent = 'MANUAL VIEW';
+      }));
+      dataToggle.addEventListener('change', () => {
+        root.classList.toggle('data-hidden', !dataToggle.checked);
+        if (!dataToggle.checked) modeButtons.forEach(button => button.classList.toggle('active', button.dataset.mode === 'physical'));
+      });
+      document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement) root.scrollIntoView({block:'start'});
+      });
+      showCurrentResult();
+    })();
+  </script>
+</body>
+</html>

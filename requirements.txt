@@ -1,0 +1,7 @@
+streamlit>=1.39,<2
+pandas>=2.2,<3
+numpy>=2.0,<3
+plotly>=5.24,<7
+google-cloud-firestore>=2.19,<3
+moss==1.9.1
+pytest>=8.3,<10
