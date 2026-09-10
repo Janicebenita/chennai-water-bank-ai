@@ -169,7 +169,7 @@ Current demonstration deployment (19 August 2026):
 - Service: `chennai-water-bank`
 - Region: `asia-south1`
 - Revision: `chennai-water-bank-00001-qw2`
-- URL: <https://chennai-water-bank-1032997828322.asia-south1.run.app>
+- URL: <[https://chennai-water-bank-ai-staging-1032997828322.asia-south1.run.app/>
 - Runtime mode: seeded in-memory simulation (`DATA_BACKEND=memory`, `DEMO_MODE=true`); no physical IoT sensors or actuators are connected.
 
 ```bash
