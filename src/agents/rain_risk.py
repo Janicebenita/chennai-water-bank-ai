@@ -31,6 +31,16 @@ class RainRiskAgent(AdvisoryAgent):
             f"{float(facts['rainfall_intensity_mm_hr']):.1f} mm/hr and drain stress is "
             f"{drain_stress:.1f}%."
         )
+        relevant_context = self._relevant_context(state)
+        if relevant_context:
+            closest = relevant_context[0]
+            action = closest.metadata.get("action", "not supplied")
+            outcome = closest.metadata.get("outcome", "not supplied")
+            summary += (
+                f" Moss supplied {len(relevant_context)} bounded related event(s); "
+                f"closest evidence {closest.evidence_id} records action {action} and "
+                f"outcome {outcome}."
+            )
         recommendation = (
             "Prioritize the deterministic safety decision and review affected capacity."
             if elevated
@@ -42,7 +52,23 @@ class RainRiskAgent(AdvisoryAgent):
             "available",
             summary,
             recommendation,
-            state.authoritative_fact_refs + state.moss_context_refs[:2],
+            state.authoritative_fact_refs
+            + tuple(item.evidence_id for item in relevant_context),
             ("Risk is derived from simulated prototype inputs, not a Chennai forecast.",),
             elapsed,
         )
+
+    @staticmethod
+    def _relevant_context(state: SharedAgentState):
+        risk_types = {
+            "HIGH_DRAIN_STRESS",
+            "CAPACITY_CONSTRAINT",
+            "WATER_QUALITY_INTERVENTION",
+            "HISTORICAL_INCIDENT",
+        }
+        return tuple(
+            item
+            for item in state.moss_context
+            if str(item.metadata.get("event_type", "")).upper() in risk_types
+            and str(item.metadata.get("zone_id", state.zone_id)) == state.zone_id
+        )[:2]

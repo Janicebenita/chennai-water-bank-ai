@@ -28,3 +28,17 @@ def test_water_event_identifier_is_stable_for_same_authoritative_step():
     assert event is not None and again is not None
     assert event.event_id == again.event_id
     assert event.to_dict()["timestamp"].endswith("+00:00")
+
+
+def test_unavailable_recharge_asset_generates_operational_event():
+    node, step, _ = _event()
+    node.recharge_available = False
+    step.sensor_state.contamination_detected = False
+    step.sensor_state.first_flush_active = False
+
+    event = EventContextBuilder().build(node, step)
+
+    assert event is not None
+    assert event.event_type == "ASSET_UNAVAILABLE"
+    assert "recharge asset unavailable" in event.risk_context
+    assert event.metadata["simulated"] is True

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+from math import isfinite
 from threading import RLock
 from time import perf_counter_ns
 from typing import Any
@@ -22,6 +23,18 @@ from .semantic_memory import (
 
 
 LOGGER = logging.getLogger(__name__)
+
+
+def water_event_to_document_info(event: WaterEvent) -> DocumentInfo:
+    """Map an evidence-linked WaterEvent to the verified Moss SDK contract."""
+    metadata = event.moss_metadata()
+    metadata["outcome"] = event.outcome
+    return DocumentInfo(
+        id=event.event_id,
+        text=event.semantic_text,
+        metadata=metadata,
+        payload=json.dumps({"source_refs": list(event.source_refs)}),
+    )
 
 
 class MossSemanticMemory(SemanticMemory):
@@ -56,12 +69,7 @@ class MossSemanticMemory(SemanticMemory):
             return SemanticMemoryHealth(True, "unavailable", "Moss health check failed.")
 
     async def index_event(self, event: WaterEvent) -> SemanticIndexResult:
-        document = DocumentInfo(
-            id=event.event_id,
-            text=event.semantic_text,
-            metadata=event.moss_metadata(),
-            payload=json.dumps({"source_refs": list(event.source_refs)}),
-        )
+        document = water_event_to_document_info(event)
         try:
             with self._operation_lock:
                 indexes = await self._client.list_indexes()
@@ -102,7 +110,7 @@ class MossSemanticMemory(SemanticMemory):
                         filter=self._metadata_filter(filters),
                     ),
                 )
-            elapsed_ms = (perf_counter_ns() - query_started) / 1_000_000
+            elapsed_ms = self._retrieval_latency_ms(result, query_started)
             contexts = tuple(
                 SemanticEvidence(
                     evidence_id=item.id,
@@ -123,6 +131,17 @@ class MossSemanticMemory(SemanticMemory):
             return SemanticRetrievalResult(
                 "unavailable", (), elapsed_ms, "moss_retrieval_failed"
             )
+
+    @staticmethod
+    def _retrieval_latency_ms(result: Any, query_started: int) -> float:
+        sdk_value = getattr(result, "time_taken_ms", None)
+        try:
+            sdk_ms = float(sdk_value)
+        except (TypeError, ValueError):
+            sdk_ms = float("nan")
+        if isfinite(sdk_ms) and sdk_ms >= 0:
+            return sdk_ms
+        return (perf_counter_ns() - query_started) / 1_000_000
 
     @staticmethod
     def _metadata_filter(filters: dict[str, Any] | None) -> dict[str, Any] | None:

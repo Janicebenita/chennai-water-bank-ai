@@ -45,6 +45,15 @@ class IncidentMemoryAgent(AdvisoryAgent):
             f"Moss retrieved {len(state.moss_context)} relevant WaterEvent(s); "
             f"{simulated_count} are explicitly labelled simulated."
         )
+        evidence_details = []
+        for item in state.moss_context[:2]:
+            action = item.metadata.get("action", "not supplied")
+            outcome = item.metadata.get("outcome", "not supplied")
+            evidence_details.append(
+                f"{item.evidence_id}: action {action}; outcome {outcome}"
+            )
+        if evidence_details:
+            summary += " Retrieved evidence: " + " | ".join(evidence_details) + "."
         elapsed = (perf_counter_ns() - started) / 1_000_000
         return AgentFinding(
             self.name,

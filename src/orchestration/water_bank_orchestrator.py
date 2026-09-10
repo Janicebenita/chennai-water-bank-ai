@@ -82,7 +82,12 @@ class WaterBankOrchestrator:
             if index_result.status == "unavailable":
                 warnings.append("WaterEvent could not be indexed in Moss.")
 
-        query = self._semantic_query(node, step, user_intent)
+        query = self._semantic_query(
+            node,
+            step,
+            user_intent,
+            event.event_type if event is not None else "NO_MEANINGFUL_EVENT",
+        )
         retrieval = await self.semantic_memory.retrieve_context(
             query,
             filters={"zone_id": node.zone},
@@ -224,15 +229,26 @@ class WaterBankOrchestrator:
 
     @staticmethod
     def _semantic_query(
-        node: WaterBankNode, step: SimulationStep, user_intent: str
+        node: WaterBankNode,
+        step: SimulationStep,
+        user_intent: str,
+        event_type: str,
     ) -> str:
         state = step.sensor_state
+        storage_percent = (
+            100.0
+            if node.storage_capacity_l <= 0
+            else 100.0 * step.storage_after_l / node.storage_capacity_l
+        )
         return (
             f"{user_intent}. Find WaterEvents relevant to zone {node.zone}, asset "
             f"{node.node_id}, rainfall {state.rainfall_intensity_mm_hr:.1f} mm/hr, "
-            f"tank level after routing, recharge conditions, water quality "
-            f"{state.water_quality_status.value}, and decision "
-            f"{step.decision.selected_action.value}."
+            f"storage {storage_percent:.1f}% full with "
+            f"{max(0.0, node.storage_capacity_l - step.storage_after_l):.1f} L available, "
+            f"recharge capacity {node.recharge_capacity_l_per_hour:.1f} L/hr, "
+            f"asset availability {'available' if node.recharge_available else 'unavailable'}, "
+            f"water quality {state.water_quality_status.value}, event type {event_type}, "
+            f"and current decision {step.decision.selected_action.value}."
         )
 
     @staticmethod

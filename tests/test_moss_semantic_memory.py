@@ -3,7 +3,10 @@ from types import SimpleNamespace
 
 from src.config.settings import Settings
 from src.memory import get_semantic_memory
-from src.memory.moss_semantic_memory import MossSemanticMemory
+from src.memory.moss_semantic_memory import (
+    MossSemanticMemory,
+    water_event_to_document_info,
+)
 from src.memory.null_semantic_memory import NullSemanticMemory
 from src.models.water_event import WaterEvent
 
@@ -28,13 +31,14 @@ def _event():
 
 
 class FakeMossClient:
-    def __init__(self, *, has_index=True, fail=False):
+    def __init__(self, *, has_index=True, fail=False, time_taken_ms=7.25):
         self.has_index = has_index
         self.fail = fail
         self.created = []
         self.added = []
         self.loaded = []
         self.query_options = None
+        self.time_taken_ms = time_taken_ms
 
     async def list_indexes(self):
         if self.fail:
@@ -58,6 +62,7 @@ class FakeMossClient:
             raise RuntimeError("unavailable")
         self.query_options = options
         return SimpleNamespace(
+            time_taken_ms=self.time_taken_ms,
             docs=[
                 SimpleNamespace(
                     id="event-1",
@@ -67,6 +72,23 @@ class FakeMossClient:
                 )
             ]
         )
+
+
+def test_water_event_to_document_info_preserves_semantic_contract():
+    event = _event()
+
+    document = water_event_to_document_info(event)
+
+    assert document.id == event.event_id
+    assert document.text == event.semantic_text
+    assert document.metadata["timestamp"] == event.timestamp.isoformat()
+    assert document.metadata["zone_id"] == event.zone_id
+    assert document.metadata["asset_id"] == event.asset_id
+    assert document.metadata["event_type"] == event.event_type
+    assert document.metadata["severity"] == "moderate"
+    assert document.metadata["action"] == event.action
+    assert document.metadata["outcome"] == event.outcome
+    assert "decision:WB-TEST-01:1" in document.payload
 
 
 def test_moss_disabled_mode_uses_noop_memory():
@@ -98,9 +120,10 @@ def test_moss_adapter_uses_real_index_add_load_and_query_contracts():
 
     assert indexed.status == "indexed"
     assert client.added and client.loaded == ["events"]
+    assert client.added[0][2].upsert is True
     assert retrieved.status == "available"
     assert retrieved.contexts[0].evidence_id == "event-1"
-    assert retrieved.retrieval_ms is not None and retrieved.retrieval_ms >= 0
+    assert retrieved.retrieval_ms == 7.25
     assert client.query_options.top_k == 3
     assert client.query_options.filter == {
         "field": "zone_id",
@@ -116,6 +139,7 @@ def test_moss_adapter_creates_missing_index_with_first_event():
 
     assert result.status == "indexed"
     assert client.created[0][0] == "events"
+    assert client.created[0][1][0].id == "event-1"
     assert client.created[0][2] is True
 
 
@@ -131,3 +155,17 @@ def test_moss_failure_returns_unavailable_without_evidence():
     assert retrieved.status == "unavailable"
     assert retrieved.contexts == ()
     assert retrieved.error_code == "moss_retrieval_failed"
+
+
+def test_moss_retrieval_uses_monotonic_fallback_without_sdk_timing(monkeypatch):
+    client = FakeMossClient(has_index=True, time_taken_ms=None)
+    memory = MossSemanticMemory("project", "key", "events", client=client)
+    clock = iter((1_000_000_000, 1_012_500_000))
+    monkeypatch.setattr(
+        "src.memory.moss_semantic_memory.perf_counter_ns", lambda: next(clock)
+    )
+
+    retrieved = asyncio.run(memory.retrieve_context("storage event"))
+
+    assert retrieved.status == "available"
+    assert retrieved.retrieval_ms == 12.5

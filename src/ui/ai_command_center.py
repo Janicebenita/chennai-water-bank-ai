@@ -96,8 +96,8 @@ def _render_result(result: OrchestratorResult) -> None:
         for warning in result.warnings:
             st.info(warning)
 
-    facts_tab, context_tab, agents_tab, latency_tab = st.tabs(
-        ["Live facts", "Moss context", "Agent findings", "Latency"]
+    facts_tab, context_tab, evidence_tab, agents_tab, latency_tab = st.tabs(
+        ["Live facts", "Moss context", "Evidence", "Agent findings", "Latency"]
     )
     with facts_tab:
         st.caption("AUTHORITATIVE · SIMULATED DATA")
@@ -116,10 +116,18 @@ def _render_result(result: OrchestratorResult) -> None:
             st.markdown(f"**{label} · Evidence `{item.evidence_id}`**")
             st.write(item.text)
             st.caption(
+                f"Timestamp: {item.metadata.get('timestamp', '—')} · "
+                f"Event: {item.metadata.get('event_type', '—')} · "
                 f"Zone: {item.metadata.get('zone_id', '—')} · "
                 f"Asset: {item.metadata.get('asset_id', '—')} · "
                 f"Relevance: {_score(item.relevance)}"
             )
+    with evidence_tab:
+        evidence_rows = _evidence_rows(result.evidence)
+        if evidence_rows:
+            st.dataframe(pd.DataFrame(evidence_rows), hide_index=True, width="stretch")
+        else:
+            st.write("No semantic evidence was retrieved for this analysis.")
     with agents_tab:
         for finding in result.agent_findings.values():
             st.markdown(
@@ -146,7 +154,10 @@ def _render_result(result: OrchestratorResult) -> None:
             hide_index=True,
             width="stretch",
         )
-        st.caption("Measured at runtime with a monotonic high-resolution clock; no demo values are hard-coded.")
+        st.caption(
+            "Moss retrieval uses the SDK-reported query time when available, with a "
+            "measured monotonic compatibility fallback. No demo values are hard-coded."
+        )
 
     st.markdown("#### Human operations review")
     accept, reject, evidence = st.columns(3)
@@ -173,3 +184,19 @@ def _display_value(value: object) -> str:
     if value is None:
         return "—"
     return str(value)
+
+
+def _evidence_rows(evidence) -> list[dict[str, str]]:
+    return [
+        {
+            "WaterEvent ID": item.evidence_id,
+            "Timestamp": str(item.metadata.get("timestamp", "—")),
+            "Event type": str(item.metadata.get("event_type", "—")),
+            "Zone": str(item.metadata.get("zone_id", "—")),
+            "Asset": str(item.metadata.get("asset_id", "—")),
+            "Relevance": _score(item.relevance),
+            "Action": str(item.metadata.get("action", "—")),
+            "Outcome": str(item.metadata.get("outcome", "—")),
+        }
+        for item in evidence
+    ]

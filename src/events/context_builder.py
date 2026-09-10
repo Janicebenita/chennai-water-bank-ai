@@ -22,6 +22,7 @@ class EventContextBuilder:
         allocation = step.decision.allocation
         meaningful = (
             allocation.incoming_l > 0
+            or not node.recharge_available
             or state.contamination_detected
             or state.first_flush_active
             or state.drain_stress_percent
@@ -30,7 +31,7 @@ class EventContextBuilder:
         if not meaningful:
             return None
 
-        event_type, severity = self._classify(step)
+        event_type, severity = self._classify(node, step)
         event_key = "|".join(
             (
                 node.node_id,
@@ -51,7 +52,8 @@ class EventContextBuilder:
         risk_context = (
             f"Water quality {state.water_quality_status.value}; "
             f"first flush {'active' if state.first_flush_active else 'cleared'}; "
-            f"contamination {'detected' if state.contamination_detected else 'not detected'}."
+            f"contamination {'detected' if state.contamination_detected else 'not detected'}; "
+            f"recharge asset {'available' if node.recharge_available else 'unavailable'}."
         )
         outcome = (
             f"Of {allocation.incoming_l:.1f} L modelled runoff, "
@@ -91,11 +93,15 @@ class EventContextBuilder:
             },
         )
 
-    def _classify(self, step: SimulationStep) -> tuple[str, str]:
+    def _classify(
+        self, node: WaterBankNode, step: SimulationStep
+    ) -> tuple[str, str]:
         state = step.sensor_state
         action = step.decision.selected_action
         if state.contamination_detected or state.first_flush_active:
             return "WATER_QUALITY_INTERVENTION", "high"
+        if not node.recharge_available:
+            return "ASSET_UNAVAILABLE", "high"
         if action == DecisionAction.CONTROLLED_DISCHARGE:
             return "CAPACITY_CONSTRAINT", "high"
         if state.drain_stress_percent >= self.settings.decision.high_drain_stress_percent:

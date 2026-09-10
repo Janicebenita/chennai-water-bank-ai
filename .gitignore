@@ -41,3 +41,6 @@ access_tokens*
 scripts/deploy_prototype_cloud_run.ps1
 scripts/deploy_prototype_cloud_run.sh
 reports/*.docx
+
+moss_error.txt
+test_moss_connection.py
