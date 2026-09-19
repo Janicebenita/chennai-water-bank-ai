@@ -1274,7 +1274,7 @@ Point to Accept, Reject and Request More Evidence.
 
 # 🗣️ Project Demonstration Statement
 
-> ### “We are not claiming to eliminate Chennai floods.
+> ### “We are not claiming for elimination of Chennai floods by this.
 >
 > We are demonstrating how distributed water intelligence can model how
 > much suitable simulated runoff is allocated to local storage and
