@@ -11,67 +11,6 @@
 
 <h1 align="center">🌧️ Chennai Water Bank AI 💧</h1>
 
-[![CI](https://github.com/Janicebenita/chennai-water-bank-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/Janicebenita/chennai-water-bank-ai/actions/workflows/ci.yml)
-
-## 🚀 Live Demo
-
-- [Public application — existing staging deployment](https://chennai-water-bank-ai-staging-1032997828322.asia-south1.run.app/)
-- [Command Center](https://chennai-water-bank-ai-staging-1032997828322.asia-south1.run.app/command_center) (also the application home page)
-- [Demo video — YouTube](https://www.youtube.com/watch?v=hvbKTbRtTag)
-
-This engineering upgrade is local and has not been deployed. The existing application, Command Center and health endpoint returned HTTP 200 during read-only validation.
-
-## 🧠 What Uses AI/Moss and What Is Deterministic?
-
-> **Structured operational data provides current truth.
-> Moss semantic memory provides context.**
-
-| Component | Actual implementation |
-|---|---|
-| Rainfall/runoff calculations | Deterministic simulated rainfall, catchment area and runoff coefficient |
-| Storage headroom and capacity constraints | Deterministic numeric limits from current structured state |
-| Water-quality safety gates and recharge eligibility | Deterministic thresholds; unsafe/first-flush water cannot directly recharge |
-| Mass balance and routing decision rules | Deterministic engineering allocation; semantic evidence cannot overwrite numeric facts |
-| WaterEvent generation | Structured transformation with deterministic event classification, IDs and text |
-| WaterEvent indexing | Moss SDK indexes/upserts the structured event's semantic representation |
-| Semantic and historical/context retrieval | Moss retrieves contextual evidence; demonstration events remain labelled simulated |
-| Shared semantic context | One bounded retrieval shared by all four advisory agents |
-| Rain & Risk Agent | Rule-based risk thresholds and bounded references to retrieved evidence; no LLM call |
-| Incident Memory Agent | Rule-based presentation of retrieved IDs, actions and outcomes; no invented incidents or LLM call |
-| Capacity Agent | Deterministic advice from authoritative storage and recharge values; no AI numeric prediction |
-| Asset & Maintenance Agent | Rule-based availability checks and filtering of Moss evidence; no LLM call |
-| Orchestrator | Async coordination, failure isolation and templated advisory assembly; no generative AI synthesis |
-| Human review | Final approval/rejection or request for more evidence; no physical actuation |
-
-**Without Moss, the deterministic Water Bank remains safe but memoryless. With Moss, the collaborative agents become evidence-aware.** Here, “safe” means preserving the prototype's deterministic gates, not certification for physical deployment. The AI capability is Moss semantic retrieval; the current advisory agents and synthesis use Python rules. Semantic evidence cannot overwrite authoritative current numeric facts.
-
-## Engineering quality
-
-Local validation on Python 3.12.14: **80 tests passed, 0 failed** (baseline: 52 passed).
-Coverage across **all `src`, `pages`, and `app.py` code: 95.13%**.
-**Coverage gate: >=75%**, enforced by pytest and CI. No application modules are excluded.
-
-| Check / boundary | Status |
-|---|---|
-| CI | Workflow added for main pushes, pull requests to main and manual runs; first hosted run pending push |
-| Lint and compilation | Ruff and Python compilation validated locally |
-| Dependencies | Exact direct and transitive pins; original `moss==1.9.1` preserved |
-| Deployment | Existing staging URL preserved; no deployment or production Cloud Run changes |
-| Persistence | Bounded transient retries, capped exponential backoff with jitter, per-RPC timeout, explicit MEMORY FALLBACK |
-| Moss unavailable/disabled | Deterministic analysis continues; missing evidence is reported, never fabricated |
-| Human authority | Final review remains required; no physical commands are issued |
-
-The runtime metrics are scenario measurements, not published performance benchmarks. Docker build validation requires a running Docker engine; it was unavailable during this local validation.
-
-## Measurable scenario impact
-
-Impact Analytics reuses the existing allocation ledger to show incoming simulated runoff, local storage, modelled groundwater recharge, safety diversion, controlled discharge, total locally retained water and immediate downstream runoff. Retained volume is **stored + recharged**; retention percentage is **100 × retained / incoming**, or zero for no incoming runoff.
-
-Use the interpretation **“X% of simulated immediate runoff was locally retained in this scenario.”** This is not a claim of flooding reduced by X%; there is no validated hydraulic flood model.
-
-The Command Center's collaborative analysis and Latency tab expose runtime Moss retrieval, individual agent, orchestration and total advisory-request durations. Moss timing uses the SDK's reported milliseconds when valid, with monotonic timing as the existing fallback. Orchestration includes the concurrent agent stage and recommendation assembly. Total request includes event persistence, indexing, retrieval and orchestration; it excludes the earlier simulation, browser rendering and human review. Agent times overlap and are not an additive latency budget. No fixed latency or impact values are claimed.
-
-
 <h3 align="center">
 Bank the Rain • Reduce the Flood • Secure the Future
 </h3>
@@ -81,10 +20,9 @@ Bank the Rain • Reduce the Flood • Secure the Future
 </p>
 
 <p align="center">
-A simulation-driven urban water intelligence platform that combines
-distributed Water Bank nodes, explainable water-allocation logic,
-semantic memory, four collaborative advisory agents, and human-governed
-decision support.
+A simulation-driven urban water intelligence platform that combines distributed Water Bank nodes,
+explainable water-allocation logic, Moss semantic memory, four collaborative advisory agents,
+and human-governed decision support.
 </p>
 
 <p align="center">
@@ -93,6 +31,17 @@ decision support.
 <img src="https://img.shields.io/badge/🧠%20MOSS-SEMANTIC%20MEMORY-7C3AED?style=for-the-badge"/>
 <img src="https://img.shields.io/badge/🤖%20COLLABORATIVE%20AGENTS-4-16A34A?style=for-the-badge"/>
 <img src="https://img.shields.io/badge/👤%20HUMAN-IN%20THE%20LOOP-F97316?style=for-the-badge"/>
+
+</p>
+
+<p align="center">
+
+<a href="https://github.com/Janicebenita/chennai-water-bank-ai/actions/workflows/ci.yml">
+<img src="https://github.com/Janicebenita/chennai-water-bank-ai/actions/workflows/ci.yml/badge.svg" alt="CI"/>
+</a>
+<img src="https://img.shields.io/badge/COVERAGE-95.13%25-16A34A?style=flat-square"/>
+<img src="https://img.shields.io/badge/COVERAGE%20GATE-75%25-0A9EDC?style=flat-square"/>
+<img src="https://img.shields.io/badge/TESTS-80%20PASSING-16A34A?style=flat-square&logo=pytest&logoColor=white"/>
 
 </p>
 
@@ -111,8 +60,8 @@ decision support.
 <img src="https://img.shields.io/badge/🚀%20LAUNCH-LIVE%20STAGING%20DEMO-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white"/>
 </a>
 
-<a href="#️-system-architecture">
-<img src="https://img.shields.io/badge/🏗️%20EXPLORE-ARCHITECTURE-181717?style=for-the-badge"/>
+<a href="https://www.youtube.com/watch?v=hvbKTbRtTag">
+<img src="https://img.shields.io/badge/▶️%20WATCH-DEMO%20VIDEO-FF0000?style=for-the-badge&logo=youtube&logoColor=white"/>
 </a>
 
 <a href="#-moss-semantic-memory">
@@ -121,13 +70,17 @@ decision support.
 
 </p>
 
----
+------------------------------------------------------------------------
 
 # 💡 What is Chennai Water Bank AI?
 
-**Chennai Water Bank AI** is a browser-based digital prototype exploring how distributed urban rainwater assets can be coordinated through **water intelligence, semantic memory, collaborative AI agents, and human-governed decision support**.
+**Chennai Water Bank AI** is a browser-based digital prototype exploring
+how distributed urban rainwater assets can be coordinated through
+**water intelligence, semantic memory, collaborative advisory agents,
+explainable engineering rules and human-governed decision support**.
 
-The system models fictional **Water Bank Nodes** distributed across Chennai.
+The system models fictional **Water Bank Nodes** distributed across
+Chennai.
 
 Each node evaluates simulated:
 
@@ -137,61 +90,88 @@ Each node evaluates simulated:
 🌱 Recharge capacity  
 🧪 Water quality  
 🌊 Drain stress  
-⚙️ Asset availability  
+⚙️ Asset availability
 
 and determines how incoming runoff should be handled.
 
 ### 💧 STORE → 🌱 RECHARGE → ↪️ DIVERT → 🌊 CONTROLLED DISCHARGE
 
-The AI layer extends this deterministic Water Bank system with:
+The intelligence layer extends the deterministic Water Bank system with:
 
 ### 📡 Live Facts → 📝 WaterEvent → 🧠 Moss → 🤖 4 Agents → 🎯 Orchestrator → 👤 Human Decision
 
 > ⚠️ **Demonstration Notice**
 >
-> Every node, rainfall value, water-quality reading, incident, WaterEvent and impact result currently shown by the prototype is **simulated data**.
+> Every node, rainfall value, water-quality reading, incident,
+> WaterEvent and impact result currently shown by the software prototype
+> is **simulated data**.
 >
-> The platform does not claim to represent Chennai government measurements, installed infrastructure, verified historical incidents, or a validated municipal digital twin.
+> The application does not claim to represent Chennai government
+> measurements, installed municipal infrastructure, verified historical
+> incidents, or a validated municipal digital twin.
 
----
+------------------------------------------------------------------------
+
+# 🚀 Live Demo & Video
+
+| Resource                      | Link                                                                                                          |
+|-------------------------------|---------------------------------------------------------------------------------------------------------------|
+| 🚀 Public staging application | [Open live demo](https://chennai-water-bank-ai-staging-1032997828322.asia-south1.run.app/)                    |
+| 🖥️ AI Command Center          | [Open Command Center](https://chennai-water-bank-ai-staging-1032997828322.asia-south1.run.app/command_center) |
+| 🎬 Demonstration video        | [Watch on YouTube](https://www.youtube.com/watch?v=hvbKTbRtTag)                                               |
+| 💻 Source code                | [GitHub repository](https://github.com/Janicebenita/chennai-water-bank-ai)                                    |
+
+> The live deployment and the repository may be updated independently.
+> Runtime values shown by the application should be treated as scenario
+> measurements, not universal benchmarks.
+
+------------------------------------------------------------------------
 
 # 🎯 The Urban Water Challenge
 
-Chennai can experience intense rainfall and local stormwater stress while also facing dry-period water-security and groundwater pressure.
+Chennai can experience intense rainfall and local stormwater stress
+while also facing dry-period water-security and groundwater pressure.
 
-A conventional urban rainwater asset is often treated as an isolated physical system.
+A conventional urban rainwater asset is often treated as an isolated
+physical system.
 
 **Chennai Water Bank asks a different question:**
 
 > ### What if distributed rainwater assets could behave like a coordinated urban water network?
 
-Instead of allowing every suitable litre of rainfall to immediately become downstream runoff, the system explores whether water can first be evaluated for:
+Instead of allowing every suitable litre of rainfall to immediately
+become downstream runoff, the system explores whether water can first be
+evaluated for:
 
 🏠 Local storage  
 🌱 Safe recharge opportunity  
 ↪️ Safety diversion  
-🌊 Controlled discharge  
+🌊 Controlled discharge
 
-The goal is **not** to claim that distributed Water Bank nodes can eliminate flooding.
+The goal is **not** to claim that distributed Water Bank nodes can
+eliminate flooding.
 
-The goal is to demonstrate how distributed intelligence could help retain a measurable amount of suitable stormwater closer to where it falls while maintaining transparent safety constraints.
+The goal is to demonstrate how distributed intelligence can model the
+local retention of suitable stormwater while maintaining transparent
+safety constraints.
 
----
+------------------------------------------------------------------------
 
 # 💧 The Water Bank Concept
 
 Six fictional demonstration nodes represent urban catchments in:
 
-| 📍 Demonstration Zone | Water Bank Role |
-|---|---|
-| 🏙️ Velachery | Distributed urban catchment |
-| 🏙️ T. Nagar | Dense urban storage scenario |
-| 🌊 Adyar | Water-management scenario |
-| 🏘️ Anna Nagar | Distributed storage/recharge scenario |
-| 🏭 Perungudi | Includes contamination safety demonstration |
-| 🌆 Tambaram | Peripheral urban catchment scenario |
+| 📍 Demonstration Zone | Water Bank Role                             |
+|-----------------------|---------------------------------------------|
+| 🏙️ Velachery          | Distributed urban catchment                 |
+| 🏙️ T. Nagar           | Dense urban storage scenario                |
+| 🌊 Adyar              | Water-management scenario                   |
+| 🏘️ Anna Nagar         | Distributed storage/recharge scenario       |
+| 🏭 Perungudi          | Includes contamination safety demonstration |
+| 🌆 Tambaram           | Peripheral urban catchment scenario         |
 
-A normalized digital sensor simulator supplies rainfall, storage, soil, drain-stress and illustrative water-quality inputs.
+A normalized digital sensor simulator supplies rainfall, storage, soil,
+drain-stress and illustrative water-quality inputs.
 
 The deterministic engine then applies:
 
@@ -199,7 +179,7 @@ The deterministic engine then applies:
 
 Every simulated litre is accounted for.
 
----
+------------------------------------------------------------------------
 
 # ✨ Why This Project Is Different
 
@@ -209,7 +189,8 @@ Every simulated litre is accounted for.
 
 ### 💧 Water Intelligence
 
-Distributed Water Bank nodes evaluate runoff close to where rainfall occurs.
+Distributed Water Bank nodes evaluate runoff close to where rainfall
+occurs.
 
 </td>
 <td width="50%">
@@ -226,14 +207,16 @@ Operational WaterEvents can be indexed and retrieved through Moss.
 
 ### 🤖 Collaborative Agents
 
-Four specialized advisory agents examine risk, incidents, capacity and asset condition.
+Four specialized advisory agents examine risk, incidents, capacity and
+asset condition.
 
 </td>
 <td width="50%">
 
 ### 📊 Explainable Decisions
 
-Reason codes, rejected alternatives, constraints, scores and mass balance remain visible.
+Reason codes, rejected alternatives, constraints, scores and mass
+balance remain visible.
 
 </td>
 </tr>
@@ -243,20 +226,54 @@ Reason codes, rejected alternatives, constraints, scores and mass balance remain
 
 ### 🛡️ Safety-First Architecture
 
-Water-quality and physical-availability gates remain ahead of advisory AI.
+Water-quality and physical-availability gates remain ahead of advisory
+intelligence.
 
 </td>
 <td width="50%">
 
 ### 👤 Human Governance
 
-AI recommendations do not autonomously control physical infrastructure.
+Recommendations do not autonomously control physical infrastructure.
 
 </td>
 </tr>
 </table>
 
----
+------------------------------------------------------------------------
+
+# 🧠 What Uses Moss / AI and What Is Deterministic?
+
+> **Structured operational data provides current truth. Moss semantic
+> memory provides context.**
+
+| Component                                 | Current Implementation                                                        |
+|-------------------------------------------|-------------------------------------------------------------------------------|
+| Rainfall/runoff calculations              | Deterministic simulated rainfall, catchment area and runoff coefficient       |
+| Storage headroom and capacity constraints | Deterministic numeric limits from current structured state                    |
+| Water-quality safety gates                | Deterministic thresholds and eligibility rules                                |
+| Recharge eligibility                      | Deterministic safety and capacity checks                                      |
+| Mass balance and routing                  | Deterministic engineering allocation                                          |
+| WaterEvent generation                     | Structured transformation and deterministic event classification              |
+| WaterEvent indexing                       | Moss indexes/upserts the semantic representation                              |
+| Semantic retrieval                        | **Moss** retrieves relevant contextual evidence                               |
+| Shared agent context                      | One bounded Moss retrieval is reused by all four agents                       |
+| Rain & Risk Agent                         | Rule-based analysis using authoritative facts plus bounded retrieved context  |
+| Incident Memory Agent                     | Presents relevant Moss-retrieved event evidence without inventing incidents   |
+| Capacity Agent                            | Deterministic advice from current storage/recharge values                     |
+| Asset & Maintenance Agent                 | Availability checks plus relevant maintenance context from retrieved evidence |
+| Orchestrator                              | Async coordination, failure isolation and explainable advisory assembly       |
+| Human review                              | Final approval, rejection or request for more evidence                        |
+| Physical actuation                        | Not autonomously controlled by the AI layer                                   |
+
+**Without Moss, the deterministic Water Bank remains operational but
+memoryless. With Moss, the collaborative agents become evidence-aware.**
+
+“Safe” in this repository means that the prototype preserves its
+deterministic safety gates and human-review boundary. It is **not** a
+certification for physical deployment.
+
+------------------------------------------------------------------------
 
 # 🧠 Moss Semantic Memory
 
@@ -278,7 +295,8 @@ Chennai Water Bank AI also explores:
 > **“What action was taken?”**  
 > **“What contextual evidence should the agents consider?”**
 
-Moss provides the project's **shared semantic-memory and retrieval layer**.
+Moss provides the project's **shared semantic-memory and retrieval
+layer**.
 
 <p align="center">
   <img src="Docs/moss-agent-flow.png"
@@ -288,7 +306,7 @@ Moss provides the project's **shared semantic-memory and retrieval layer**.
 
 ### 🔄 Semantic Memory Flow
 
-```text
+``` text
 Meaningful Operational State
             │
             ▼
@@ -318,28 +336,27 @@ chennai-water-bank-events
      👤 Human Review
 ```
 
----
+------------------------------------------------------------------------
 
 # 📝 WaterEvents
 
-A **WaterEvent** is the semantic unit used to describe a meaningful operational situation.
+A **WaterEvent** is the semantic unit used to describe a meaningful
+operational situation.
 
-Each WaterEvent contains structured information including:
-
-| Field | Purpose |
-|---|---|
-| 🆔 Event ID | Stable event identifier |
-| 🕐 Timestamp | When the event occurred |
-| 📍 Zone | Demonstration zone |
-| 🏗️ Asset | Water Bank node |
-| ⚠️ Event Type | Operational event category |
-| 📋 Summary | Human-readable event description |
-| 🌧️ Risk Context | Relevant environmental/operational context |
-| 🎯 Action | Deterministic Water Bank action |
-| 📊 Outcome | Result of the event |
-| 🧠 Semantic Text | Retrieval-oriented representation |
-| 🔗 Source References | Links to originating evidence |
-| 🏷️ Metadata | Searchable event attributes |
+| Field                | Purpose                                    |
+|----------------------|--------------------------------------------|
+| 🆔 Event ID          | Stable event identifier                    |
+| 🕐 Timestamp         | When the event occurred                    |
+| 📍 Zone              | Demonstration zone                         |
+| 🏗️ Asset             | Water Bank node                            |
+| ⚠️ Event Type        | Operational event category                 |
+| 📋 Summary           | Human-readable event description           |
+| 🌧️ Risk Context      | Relevant environmental/operational context |
+| 🎯 Action            | Deterministic Water Bank action            |
+| 📊 Outcome           | Result of the event                        |
+| 🧠 Semantic Text     | Retrieval-oriented representation          |
+| 🔗 Source References | Links to originating evidence              |
+| 🏷️ Metadata          | Searchable event attributes                |
 
 Meaningful simulator-generated events may include:
 
@@ -348,13 +365,13 @@ Meaningful simulator-generated events may include:
 🌊 High drain stress  
 ⚠️ Capacity constraints  
 🧪 Water-quality interventions  
-🛠️ Asset-unavailable conditions  
+🛠️ Asset-unavailable conditions
 
-All simulator-generated events remain explicitly identified as **SIMULATED DATA**.
+All simulator-generated events remain explicitly identified as
+**SIMULATED DATA**. They are not presented as historical Chennai
+incidents.
 
-They are not presented as historical Chennai incidents.
-
----
+------------------------------------------------------------------------
 
 # 🤖 Four Collaborative Advisory Agents
 
@@ -370,22 +387,21 @@ They are not presented as historical Chennai incidents.
 
 </p>
 
-The four advisory agents share the **same bounded Moss retrieval result** for an analysis request.
+The four advisory agents share the **same bounded Moss retrieval
+result** for an analysis request.
 
 They do not independently overwrite live operational facts.
 
-| Agent | Responsibility | Primary Evidence |
-|---|---|---|
-| 🌧️ **Rain & Risk Agent** | Evaluates rainfall, drain stress and safety context | Authoritative facts + relevant Moss context |
-| 🧠 **Incident Memory Agent** | Reports retrieved operational precedents | Moss evidence |
-| 💧 **Capacity Agent** | Evaluates tank headroom and recharge opportunity | Authoritative numerical facts |
-| 🛠️ **Asset & Maintenance Agent** | Reviews asset availability and relevant maintenance context | Asset state + relevant Moss evidence |
+| Agent                            | Responsibility                                              | Primary Evidence                            |
+|----------------------------------|-------------------------------------------------------------|---------------------------------------------|
+| 🌧️ **Rain & Risk Agent**         | Evaluates rainfall, drain stress and safety context         | Authoritative facts + relevant Moss context |
+| 🧠 **Incident Memory Agent**     | Reports retrieved operational precedents                    | Moss evidence                               |
+| 💧 **Capacity Agent**            | Evaluates tank headroom and recharge opportunity            | Authoritative numerical facts               |
+| 🛠️ **Asset & Maintenance Agent** | Reviews asset availability and relevant maintenance context | Asset state + relevant Moss evidence        |
 
 ### 🔒 Shared Context Principle
 
-For each collaborative analysis:
-
-```text
+``` text
 ONE semantic retrieval
         ↓
 ONE shared immutable context
@@ -393,13 +409,15 @@ ONE shared immutable context
 FOUR concurrent advisory agents
 ```
 
-This prevents each agent from creating an inconsistent version of operational memory.
+This prevents each agent from creating an inconsistent version of
+operational memory.
 
----
+------------------------------------------------------------------------
 
 # 🎯 Water Bank Orchestrator
 
-The **Water Bank Orchestrator** is where the system's three intelligence streams converge.
+The **Water Bank Orchestrator** is where the system's three intelligence
+streams converge.
 
 ### 1️⃣ Authoritative Facts
 
@@ -413,9 +431,7 @@ Retrieved WaterEvents relevant to the current situation.
 
 Advisory findings from the four specialized agents.
 
-The orchestrator keeps these categories separate.
-
-```text
+``` text
               📊 AUTHORITATIVE FACTS
                        │
                        │
@@ -435,9 +451,10 @@ The orchestrator keeps these categories separate.
 
 Semantic results cannot overwrite authoritative numerical facts.
 
-Individual agent failures are isolated so the deterministic Water Bank analysis can continue.
+Individual agent failures are isolated so the deterministic Water Bank
+analysis can continue.
 
----
+------------------------------------------------------------------------
 
 # 🏗️ System Architecture
 
@@ -447,11 +464,12 @@ Individual agent failures are isolated so the deterministic Water Bank analysis 
        alt="Chennai Water Bank AI System Architecture"/>
 </p>
 
-The architecture separates **authoritative operational truth** from **semantic contextual memory**.
+The architecture separates **authoritative operational truth** from
+**semantic contextual memory**.
 
 ## 📊 Path A — Authoritative Operational Data
 
-```text
+``` text
 Rainfall
 Storage
 Recharge Capacity
@@ -467,11 +485,12 @@ Structured Water Bank Models
 Water Bank Orchestrator
 ```
 
-These values remain the source of truth for current operational calculations.
+These values remain the source of truth for current operational
+calculations.
 
 ## 🧠 Path B — Semantic Context
 
-```text
+``` text
 Operational Situation
        │
        ▼
@@ -492,9 +511,10 @@ Water Bank Orchestrator
 
 ### 🛡️ Architectural Rule
 
-> **Semantic memory provides context. Structured operational data provides current truth.**
+> **Semantic memory provides context. Structured operational data
+> provides current truth.**
 
----
+------------------------------------------------------------------------
 
 # 🖥️ AI Command Center
 
@@ -504,9 +524,7 @@ Water Bank Orchestrator
        alt="Chennai Water Bank AI Command Center"/>
 </p>
 
-The Command Center is the human-facing operational interface.
-
-It brings together:
+The Command Center brings together:
 
 📍 GIS / Water Bank node information  
 🌧️ Rainfall and risk state  
@@ -518,427 +536,51 @@ It brings together:
 💡 Orchestrator recommendation  
 ⏱️ Retrieval and orchestration latency  
 ⚠️ Limitations and uncertainty  
-👤 Human-review controls  
+👤 Human-review controls
 
 ### Human Review Controls
 
-The interface provides:
-
-✅ **Accept**  
-❌ **Reject**  
-🔎 **Request More Evidence**
-
-These controls update the decision-support workflow only.
-
-They do **not** directly control valves, pumps, recharge infrastructure or other physical equipment.
-
----
-
-# 🔄 How a Collaborative Analysis Works
-
-```text
-1. 📡 Read current Water Bank state
-              ↓
-2. 📊 Preserve authoritative facts
-              ↓
-3. 📝 Build meaningful WaterEvent
-              ↓
-4. 🧠 Index event in Moss
-              ↓
-5. 🔍 Perform ONE semantic retrieval
-              ↓
-6. 🤝 Create shared immutable context
-              ↓
-7. 🤖 Run four agents concurrently
-              ↓
-8. 🎯 Combine evidence in Orchestrator
-              ↓
-9. 🖥️ Display recommendation + evidence
-              ↓
-10. 👤 Human operator reviews
-```
-
-The existing deterministic Water Bank decision remains preserved throughout the AI workflow.
-
----
-
-# 🛡️ Human-Governed Intelligence
-
-<p align="center">
-
-<img src="https://img.shields.io/badge/AI-DETECTS-0284C7?style=flat-square"/>
-<img src="https://img.shields.io/badge/AI-ANALYSES-7C3AED?style=flat-square"/>
-<img src="https://img.shields.io/badge/AI-RETRIEVES%20EVIDENCE-0EA5E9?style=flat-square"/>
-<img src="https://img.shields.io/badge/AI-RECOMMENDS-F97316?style=flat-square"/>
-<img src="https://img.shields.io/badge/HUMAN-DECIDES-16A34A?style=flat-square"/>
-
-</p>
-
-Chennai Water Bank AI follows a governance-first boundary:
-
-> ### AI may analyse, retrieve, explain and recommend — but consequential physical action remains human-controlled.
-
-The current AI layer is advisory.
-
-No autonomous AI agent issues commands to:
-
-🚰 Valves  
-⚙️ Pumps  
-🌱 Recharge infrastructure  
-🌊 Drainage gates  
-🏗️ Physical Water Bank assets  
-
----
-
-# 💧 Explainable Water Allocation
-
-The transparent runoff model is:
-
-```text
-runoff_litres =
-rainfall_mm × catchment_area_m² × runoff_coefficient
-```
-
-because:
-
-```text
-1 mm rainfall over 1 m² = 1 litre
-```
-
-Tank headroom is:
-
-```text
-available_storage =
-storage_capacity - current_storage
-```
-
-Estimated interval recharge capacity uses configured hourly recharge capacity, interval duration and a simple unsaturated-soil factor.
-
-These equations are transparent engineering approximations for the prototype.
-
-They do **not** constitute a calibrated hydraulic drainage or groundwater model.
-
----
-
-# 🎯 Decision Logic
-
-The deterministic decision engine prioritizes:
-
-### 🛡️ Safety → 🌊 Immediate Runoff → 💧 Storage → 🌱 Recharge → ↪️ Controlled Release
-
-Possible actions include:
-
-| Action | Meaning |
-|---|---|
-| 💧 `STORE` | Route suitable water to available storage |
-| 🌱 `RECHARGE` | Route eligible water toward recharge |
-| 💧🌱 `STORE_AND_RECHARGE` | Allocate between storage and recharge |
-| ↪️ `DIVERT` | Divert water because of safety/eligibility constraints |
-| 🌊 `CONTROLLED_DISCHARGE` | Release runoff when storage/recharge cannot accept it |
-
-Every result contains:
-
-✅ Reason codes  
-✅ Human explanation  
-✅ Rejected alternatives  
-✅ Physical constraints  
-✅ Priority scores  
-✅ Mass-balanced allocation  
-
----
-
-# 🧪 Water-Quality Safeguards
-
-Illustrative safety logic considers:
-
-🧫 Contamination  
-⚗️ pH  
-🌫️ Turbidity  
-🌧️ First-flush condition  
-🌱 Soil saturation  
-🛠️ Recharge availability  
-
-Safety examples:
-
-- detected contamination or out-of-range pH forces diversion;
-- first flush blocks direct recharge in the demonstration;
-- moderate turbidity can allow storage while blocking recharge;
-- only water passing the stricter illustrative screen may be considered for recharge;
-- high soil saturation can block recharge;
-- unavailable recharge infrastructure blocks recharge.
-
-> ⚠️ **Water Quality Notice**
->
-> Prototype water-quality logic is illustrative. Real groundwater recharge requires certified site-specific testing, treatment design, hydrogeological assessment and regulatory approval.
-
----
-
-# 🧪 Simulation Methodology
-
-The built-in storm contains **eight 15-minute rainfall-intensity pulses**.
-
-Each fictional node has a synthetic bias so the same network event produces different:
-
-🌧️ Local rainfall  
-💧 Storage pressure  
-🌱 Soil saturation  
-🌊 Drain stress  
-🧪 Water-quality conditions  
-
-Perungudi intentionally includes an early contaminated-reading demonstration so the safety override can be shown during a live demo.
-
-The simulator is deterministic to support repeatable demonstrations.
-
-> All values are synthetic assumptions rather than measurements.
-
----
-
-# 🧰 Engineering Features
-
-### 🖥️ Command Center
-
-Premium city command center with simulated KPI cards and Chennai map.
-
-### 🌧️ Storm Simulation
-
-One-click **Simulate Chennai Storm** network event.
-
-### 🧠 Collaborative AI
-
-Moss semantic retrieval and four-agent analysis.
-
-### 🔍 Explainability
-
-Reason codes, evidence, constraints and rejected alternatives.
-
-### 💧 Mass Balance
-
-Every litre is accounted for through the allocation engine.
-
-### 🏗️ Physical Process
-
-Eight-scene engineering explainer connecting sensing, decision, controller translation, actuation and verification.
-
-### 🧪 Scenario Lab
-
-Six predefined engineering scenarios.
-
-### 💥 Try Breaking the System
-
-Interactive judge mode with parameter controls.
-
-### 📊 Impact Analytics
-
-Dynamic without-vs-with Water Bank comparison.
-
-### ☁️ Deployment
-
-Containerized application configured for Google Cloud Run.
-
----
-
-# 🎬 Hackathon Demo Flow
-
-A strong 60–90 second demonstration:
-
-### 1️⃣ Open Command Center
-
-Show the distributed Chennai Water Bank network.
-
-### 2️⃣ Run Simulated Chennai Storm
-
-Trigger the deterministic storm simulation.
-
-### 3️⃣ Select a Water Bank Node
-
-Show rainfall, storage, water quality, recharge and drain conditions.
-
-### 4️⃣ Open Collaborative AI
-
-Run the four-agent analysis.
-
-### 5️⃣ Show Moss Context
-
-Point out the retrieved WaterEvents and timestamps.
-
-### 6️⃣ Show Four Agent Findings
-
-Explain the different agent responsibilities.
-
-### 7️⃣ Show Measured Latency
-
-Display actual runtime retrieval and orchestration timing.
-
-### 8️⃣ Show Recommendation
-
-Explain how live facts and semantic evidence remain distinguishable.
-
-### 9️⃣ Show Human Approval
-
-Point to:
-
-```text
+``` text
 ACCEPT
 REJECT
 REQUEST MORE EVIDENCE
 ```
 
-### 🔟 Close with the safety boundary
+These controls update the decision-support workflow only. They do
+**not** directly control valves, pumps, recharge infrastructure or other
+physical equipment.
 
-> **“The AI advises. The Water Bank keeps authoritative operational truth separate. The human remains the final decision authority.”**
+------------------------------------------------------------------------
 
----
+# 🔄 Collaborative Analysis Request
 
-# 🗣️ Project Demonstration Statement
+For each analysis request:
 
-> ### “We are not claiming to eliminate Chennai floods.
->
-> We are demonstrating how distributed intelligence can keep a measurable portion of suitable rainwater from immediately becoming downstream runoff.
->
-> Every litre is calculated, every safety intervention is visible, semantic evidence is traceable, and every AI recommendation remains subject to human review.”
-
----
-
-# ⚙️ Technology Stack
-
-<p align="center">
-
-<img src="https://img.shields.io/badge/Python-3.12+-3776AB?style=for-the-badge&logo=python&logoColor=white"/>
-<img src="https://img.shields.io/badge/Streamlit-Application-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white"/>
-<img src="https://img.shields.io/badge/Moss-Semantic%20Memory-7C3AED?style=for-the-badge"/>
-<img src="https://img.shields.io/badge/Google%20Cloud-Cloud%20Run-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white"/>
-<img src="https://img.shields.io/badge/Docker-Container-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
-
-</p>
-
-| Layer | Technology / Approach |
-|---|---|
-| 🐍 Application | Python |
-| 🖥️ Interface | Streamlit |
-| 🧠 Semantic Memory | Moss |
-| 🤖 Agent Layer | Typed collaborative advisory agents |
-| 🎯 Orchestration | Async Python orchestration |
-| 📊 Data Models | Structured Water Bank domain models |
-| 🗺️ Spatial View | Chennai GIS-style visualization |
-| 💾 Persistence | Memory / optional Firestore |
-| ☁️ Cloud | Google Cloud Run |
-| 📦 Container | Docker |
-| 🧪 Testing | pytest |
-
----
-
-# 🚀 Run Locally
-
-## Prerequisites
-
-```text
-Python 3.12+
+``` text
+Current Structured Facts
+          │
+          ├───────────────┐
+          │               │
+          ▼               ▼
+     WaterEvent        Deterministic
+          │             Decision
+          ▼               │
+        Moss              │
+          │               │
+          ▼               │
+ Shared Semantic Context  │
+          │               │
+          ▼               │
+   Four Advisory Agents   │
+          └───────┬───────┘
+                  ▼
+             Orchestrator
+                  │
+                  ▼
+            Human Review
 ```
 
-Create a virtual environment:
-
-```bash
-python -m venv .venv
-```
-
-### Windows PowerShell
-
-```powershell
-.venv\Scripts\Activate.ps1
-```
-
-### macOS / Linux
-
-```bash
-source .venv/bin/activate
-```
-
-Install dependencies:
-
-```bash
-python -m pip install -r requirements.txt
-```
-
-Launch:
-
-```bash
-streamlit run app.py
-```
-
-For a Cloud Run-equivalent local port:
-
-```bash
-streamlit run app.py \
-  --server.address=0.0.0.0 \
-  --server.port=8080
-```
-
----
-
-# 🧠 Moss Configuration
-
-Moss is optional in baseline mode.
-
-Without Moss credentials, the original deterministic Water Bank continues operating.
-
-### Environment Variables
-
-| Variable | Default | Purpose |
-|---|---:|---|
-| `MOSS_ENABLED` | `false` | Enables Moss indexing and retrieval |
-| `MOSS_PROJECT_ID` | unset | Moss project identifier |
-| `MOSS_PROJECT_KEY` | unset | Moss project credential |
-| `MOSS_INDEX_NAME` | `chennai-water-bank-events` | WaterEvent semantic index |
-| `MOSS_TOP_K` | `4` | Bounded semantic result count |
-
-### Production WaterEvent Index
-
-```text
-chennai-water-bank-events
-```
-
-### Setup
-
-1. Create a Moss project.
-2. Obtain the project ID and project key.
-3. Supply credentials securely.
-4. Set:
-
-```text
-MOSS_ENABLED=true
-```
-
-5. Start Chennai Water Bank AI.
-6. Run a meaningful simulated Water Bank scenario.
-7. Run Collaborative Analysis.
-8. Confirm Moss status and retrieved evidence.
-9. Confirm measured retrieval latency.
-
-> 🔐 **Security:** Never commit `MOSS_PROJECT_KEY`, `.env`, service-account JSON files or other credentials to Git.
-
----
-
-# 🔍 Moss Retrieval Design
-
-For each collaborative analysis request:
-
-```text
-Authoritative Facts
-       ↓
-Meaningful WaterEvent
-       ↓
-Moss Index / Upsert
-       ↓
-ONE semantic query
-       ↓
-Bounded retrieval
-       ↓
-Shared context
-       ↓
-Four agents
-```
-
-The semantic query can include contextual information such as:
+The semantic query can include:
 
 📍 Zone  
 🏗️ Asset  
@@ -949,189 +591,269 @@ The semantic query can include contextual information such as:
 🛠️ Asset availability  
 🧪 Water quality  
 ⚠️ Event type  
-🎯 Current deterministic decision  
+🎯 Current deterministic decision
 
 The same retrieved context is reused by all four agents.
 
----
+------------------------------------------------------------------------
 
 # ⏱️ Runtime Latency
 
-Moss retrieval latency is taken from the SDK-provided timing when available.
+The Command Center exposes runtime timing for the collaborative analysis
+pipeline.
 
-A local high-resolution monotonic timer is retained only as a compatibility fallback when a valid SDK timing value is unavailable.
+Moss retrieval latency is taken from the SDK-provided timing when
+available. A local high-resolution monotonic timer is retained only as a
+compatibility fallback when a valid SDK timing value is unavailable.
 
-The UI displays measured runtime values.
+The application can expose:
 
-> No fixed “sub-10 ms” or other latency result should be interpreted as guaranteed performance. Actual retrieval latency depends on the configured index, application instance and network environment.
+| Metric                      | Meaning                                                 |
+|-----------------------------|---------------------------------------------------------|
+| Moss retrieval latency      | Retrieval timing reported by the Moss integration       |
+| Agent response time         | Runtime duration for individual advisory agents         |
+| Orchestration time          | Concurrent agent stage plus recommendation assembly     |
+| Total advisory-request time | Event persistence/indexing, retrieval and orchestration |
 
----
+Agent durations may overlap because agents run concurrently; they should
+not be added together as a sequential latency budget.
 
-# 🧪 Testing
+> No fixed “sub-10 ms” result is claimed by this repository. The UI
+> reports measured runtime values. Actual retrieval latency depends on
+> the configured index, runtime instance and environment.
 
-Run:
+------------------------------------------------------------------------
 
-```bash
-pytest
+# 💧 Explainable Water Allocation
+
+The transparent runoff model is:
+
+``` text
+runoff_litres =
+rainfall_mm × catchment_area_m² × runoff_coefficient
 ```
 
-The default pytest command calculates coverage, writes `coverage.xml` and enforces 75% across `src`, `pages` and `app.py`. CI runs without production credentials; Firestore SDK boundaries and Moss calls are mocked in unit tests.
+because:
 
-```bash
-python -m ruff check .
-python -m pip check
+``` text
+1 mm rainfall over 1 m² = 1 litre
 ```
 
-The lock resolves for Python 3.12 on Ubuntu 24.04 (the CI runner). The existing Moss native wheel requires Linux x86_64 glibc >=2.35; older Linux targets are not supported by that wheel.
+Tank headroom is:
 
-The portable lock was generated with uv 0.12.17 from verified installed/resolved metadata, including platform-specific dependencies. To intentionally refresh it under review:
-
-```bash
-uv pip compile requirements.in --python-version 3.12 --universal --no-emit-index-url -o requirements.txt
+``` text
+available_storage_litres =
+storage_capacity_litres - current_storage_litres
 ```
 
-`requirements.in` lists direct application/test dependencies. The optional historical report generator is not part of the application runtime or CI execution.
+Estimated interval recharge capacity uses configured recharge capacity,
+interval duration and a simple unsaturated-soil factor.
 
-Compile-check:
+These equations are transparent engineering approximations for the
+prototype. They do **not** constitute a calibrated hydraulic drainage or
+groundwater model.
 
-```bash
-python -m compileall app.py pages src tests
+------------------------------------------------------------------------
+
+# 📊 Measurable Scenario Impact
+
+Impact Analytics reuses the allocation ledger rather than inventing a
+separate impact model.
+
+It displays:
+
+🌧️ Incoming simulated runoff  
+💧 Water routed to storage  
+🌱 Modelled recharge allocation  
+↪️ Safety diversion  
+🌊 Controlled discharge  
+🏦 Total locally retained water  
+📉 Immediate downstream runoff  
+⏱️ Decision and advisory timing
+
+### Local Runoff Retention Formula
+
+Instead of using a placeholder such as **X%**, the project defines the
+metric explicitly:
+
+``` text
+locally_retained_litres =
+stored_litres + recharged_litres
 ```
 
-Current local validation: **80 tests passed, 0 failed; 95.13% coverage; 75% gate**. The CI badge above reflects hosted runs once this workflow is pushed.
-
-<p align="center">
-
-<img src="https://img.shields.io/badge/PYTHON%20COMPILATION-PASS-16A34A?style=for-the-badge&logo=python&logoColor=white"/>
-<img src="https://img.shields.io/badge/MOSS%20FALLBACK-VALIDATED-7C3AED?style=for-the-badge"/>
-
-</p>
-
-Coverage includes:
-
-- WaterEvent generation
-- WaterEvent → Moss document conversion
-- outcome metadata
-- source references
-- index creation
-- upsert behavior
-- semantic retrieval
-- SDK latency propagation
-- timing fallback
-- disabled Moss mode
-- unavailable Moss behavior
-- asset-unavailable events
-- bounded Rain & Risk context
-- Incident Memory evidence integrity
-- maintenance evidence filtering
-- one retrieval reused across four agents
-- authoritative-fact immutability
-- individual agent failure isolation
-- UI evidence rendering
-- retrieved timestamps
-- pending human approval
-
----
-
-# 💾 Persistence
-
-The baseline application can operate entirely in memory.
-
-Optional Firestore persistence is available.
-
-| Variable | Default | Purpose |
-|---|---:|---|
-| `DATA_BACKEND` | `memory` | `memory` or `firestore` |
-| `DEMO_MODE` | `true` | Enables seeded demonstration behavior |
-| `GOOGLE_CLOUD_PROJECT` | unset | Optional GCP project |
-| `FIRESTORE_DATABASE` | `(default)` | Firestore database |
-
-Collections include:
-
-```text
-nodes
-simulation_runs
-node_events
-decisions
-impact_snapshots
+``` text
+local_runoff_retention_percent =
+100 × locally_retained_litres / incoming_runoff_litres
 ```
 
-Firestore initialization, health checks, reads and writes degrade explicitly to the existing memory backend when service access fails. Transient service/network failures receive up to three attempts by default, with capped exponential backoff and equal jitter. Permission/authentication failures do not retry; runtime programming errors propagate. SDK retries are disabled to avoid nested retry budgets.
+For a scenario with no incoming runoff:
 
-| Retry setting | Default | Accepted environment range |
-|---|---:|---|
-| `FIRESTORE_MAX_ATTEMPTS` | 3 | 1–5 |
-| `FIRESTORE_INITIAL_DELAY_MS` | 200 | 0–5000 |
-| `FIRESTORE_MAX_DELAY_MS` | 2000 | 0–10000 |
-| `FIRESTORE_TIMEOUT_SECONDS` | 5 | 1–30 per RPC |
-
-After exhaustion the sidebar shows **Persistence: MEMORY FALLBACK** and a fixed, non-secret reason. Structured logs contain operation, attempt and safe reason codes, never exception messages or payloads. Successful node reads/writes refresh the local mirror; otherwise seeded demonstration nodes remain available. Event retries reuse a document ID to avoid duplicates after uncertain acknowledgements.
-
-Fallback is sticky for the cached repository's lifetime; restart/recreate it to try Firestore again. Memory writes are not durable or automatically replayed to Firestore. An ambiguous failed write may already have reached Firestore, so fallback is not a synchronization guarantee. Human review and the current-truth/context boundary still apply.
-
----
-
-# ☁️ Google Cloud Deployment
-
-<p align="center">
-
-<img src="https://img.shields.io/badge/GOOGLE%20CLOUD-RUN-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white"/>
-<img src="https://img.shields.io/badge/REGION-asia--south1-0EA5E9?style=for-the-badge"/>
-<img src="https://img.shields.io/badge/ENVIRONMENT-STAGING-F59E0B?style=for-the-badge"/>
-
-</p>
-
-### Current Staging Application
-
-<p align="center">
-
-<a href="https://chennai-water-bank-ai-staging-1032997828322.asia-south1.run.app/">
-<img src="https://img.shields.io/badge/🚀%20OPEN-CHENNAI%20WATER%20BANK%20AI-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white"/>
-</a>
-
-</p>
-
-Cloud Run deployment requires access to the appropriate Google Cloud account.
-
-Example:
-
-```bash
-gcloud auth login
-gcloud config set project YOUR_PROJECT_ID
-
-gcloud run deploy chennai-water-bank-ai-staging \
-  --source . \
-  --region asia-south1 \
-  --allow-unauthenticated \
-  --port 8080
+``` text
+local_runoff_retention_percent = 0
 ```
 
-Moss credentials should be supplied through secure secret management rather than bundled in the repository or container image.
+Immediate downstream runoff is represented by the water that remains
+after the locally retained allocation, subject to the model's
+diversion/discharge accounting.
 
----
+### Correct Interpretation
 
-# 🔥 Failure & Degraded Modes
+> **Local runoff retention percentage = the percentage of simulated
+> incoming runoff allocated to local storage plus modelled recharge in
+> that scenario.**
 
-The system is designed to remain explicit when optional intelligence is unavailable.
+This metric is **not a flood-reduction percentage**.
 
-| Condition | Behavior |
-|---|---|
-| 🧠 Moss disabled | Original deterministic Water Bank continues |
-| 🔑 Credentials missing | Semantic context unavailable; application continues |
-| ❌ Moss indexing failure | No historical evidence is fabricated |
-| 🔍 Moss retrieval failure | Structured operational analysis continues |
-| 🤖 One agent fails | Other agents and authoritative facts remain available |
-| 🧰 Maintenance evidence absent | System explicitly reports missing evidence |
-| 📡 Physical data absent | Simulation limitation remains visible |
-| 👤 Human approval absent | Approval remains `pending` |
+The project does **not** claim that a calculated retention percentage
+means the same percentage reduction in flood depth, inundation area,
+flood probability, property damage or citywide flood risk.
 
----
+A validated flood-reduction claim would require a calibrated
+hydraulic/hydrologic model incorporating factors such as
+drainage-network capacity, topography, time of concentration, spatial
+rainfall, tides, backwater effects and catchment interactions. That
+model is outside the current prototype.
+
+------------------------------------------------------------------------
+
+# 🎛️ Deterministic Decision Logic
+
+The deterministic decision engine prioritizes:
+
+### 🛡️ Safety → 🌊 Immediate Runoff → 💧 Storage → 🌱 Recharge → ↪️ Controlled Release
+
+Possible actions include:
+
+| Action                    | Meaning                                                |
+|---------------------------|--------------------------------------------------------|
+| 💧 `STORE`                | Route suitable water to available storage              |
+| 🌱 `RECHARGE`             | Route eligible water toward recharge                   |
+| 💧🌱 `STORE_AND_RECHARGE` | Allocate between storage and recharge                  |
+| ↪️ `DIVERT`               | Divert water because of safety/eligibility constraints |
+| 🌊 `CONTROLLED_DISCHARGE` | Release runoff when storage/recharge cannot accept it  |
+
+Every result can expose:
+
+✅ Reason codes  
+✅ Human-readable explanation  
+✅ Rejected alternatives  
+✅ Physical constraints  
+✅ Priority scores  
+✅ Mass-balanced allocation
+
+------------------------------------------------------------------------
+
+# 🧪 Water-Quality Safeguards
+
+Illustrative safety logic considers:
+
+🧫 Contamination  
+⚗️ pH  
+🌫️ Turbidity  
+🌧️ First-flush condition  
+🌱 Soil saturation  
+🛠️ Recharge availability
+
+Safety examples include:
+
+- detected contamination or out-of-range pH forces diversion;
+- first flush blocks direct recharge in the demonstration;
+- moderate turbidity can allow storage while blocking recharge;
+- only water passing the stricter illustrative screen may be considered
+  for recharge;
+- high soil saturation can block recharge;
+- unavailable recharge infrastructure blocks recharge.
+
+> ⚠️ **Water Quality Notice**
+>
+> Prototype water-quality logic is illustrative. Real groundwater
+> recharge requires certified site-specific testing, treatment design,
+> hydrogeological assessment and regulatory approval.
+
+------------------------------------------------------------------------
+
+# 🧪 Simulation Methodology
+
+The built-in storm contains **eight 15-minute rainfall-intensity
+pulses**.
+
+Each fictional node has a synthetic bias so the same network event
+produces different:
+
+🌧️ Local rainfall  
+💧 Storage pressure  
+🌱 Soil saturation  
+🌊 Drain stress  
+🧪 Water-quality conditions
+
+Perungudi intentionally includes an early contaminated-reading
+demonstration so the safety override can be shown during a live demo.
+
+The simulator is deterministic to support repeatable demonstrations.
+
+> All software-demo values are synthetic assumptions rather than
+> municipal measurements.
+
+------------------------------------------------------------------------
+
+# 🔌 Physical Prototype
+
+The broader Chennai Water Bank work also includes an **ESP32-based
+physical prototype** used to explore how sensing and local deterministic
+routing could connect to the software architecture.
+
+The prototype work has included:
+
+| Function              | Prototype Element                       |
+|-----------------------|-----------------------------------------|
+| 📏 Tank level         | Ultrasonic sensing                      |
+| 🧪 Water quality      | Turbidity sensing                       |
+| 🌱 Recharge condition | Soil-moisture sensing                   |
+| 🌧️ Rain condition     | Rain sensing                            |
+| 💧 Flow verification  | Flow sensor                             |
+| ⚙️ Local routing      | ESP32 deterministic controller          |
+| 🔌 Output switching   | Relay-controlled storage/recharge paths |
+| 📡 Connectivity       | Wi-Fi telemetry/setup workflow          |
+
+The local controller is designed around a fail-safe principle: physical
+routing logic remains deterministic and does not depend on a cloud AI
+response.
+
+### Prototype Routing Concept
+
+``` text
+Sensor Readings
+      │
+      ▼
+Water Quality Check
+      │
+      ├── Unsafe ─────────────► DIVERT
+      │
+      ▼
+Storage Capacity Check
+      │
+      ├── Capacity Available ─► STORE
+      │
+      ▼
+Recharge Eligibility Check
+      │
+      ├── Eligible ───────────► RECHARGE
+      │
+      ▼
+Controlled Diversion / Discharge
+```
+
+> The hackathon software demonstration remains simulation-driven. The
+> physical prototype should not be interpreted as deployed Chennai
+> infrastructure or as autonomous AI control of municipal water assets.
+
+------------------------------------------------------------------------
 
 # 🏗️ Physical Process Boundary
 
-The future physical architecture may connect:
+A future field architecture can follow:
 
-```text
+``` text
 🌧️ Rain
   ↓
 📡 Sensors
@@ -1153,177 +875,508 @@ The future physical architecture may connect:
 📡 Flow + Position Verification
 ```
 
-The current software demonstration does not autonomously operate physical infrastructure.
+The AI advisory layer is not granted final physical decision authority.
 
----
+------------------------------------------------------------------------
 
-# 🔌 Future IoT Integration
+# 🧰 Engineering Features
 
-Potential future field inputs include:
+<table>
+<tr>
+<td width="50%">
 
-🌧️ Rain gauges  
-📏 Tank-level sensors  
-💧 Flow meters  
-🌱 Soil-moisture probes  
-🧪 Certified water-quality instruments  
-⚙️ Valve-position sensors  
-📡 ESP32 / edge gateways  
+### 🖥️ Command Center
 
-Future telemetry could be normalized through the existing sensor-data abstraction so the core safety and allocation logic remains stable.
+City-scale operational view with simulated KPI cards and Chennai map.
 
-The current application still treats simulated values as simulated.
+</td>
+<td width="50%">
 
----
+### 🌧️ Storm Simulation
 
-# 🔭 Future AI Roadmap
+One-click deterministic network storm scenario.
 
-With validated real-world data, future research could investigate:
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 🧠 Collaborative Intelligence
+
+Moss semantic retrieval plus four specialized advisory agents.
+
+</td>
+<td width="50%">
+
+### 🔍 Explainability
+
+Reason codes, evidence, constraints and rejected alternatives.
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 🧪 Scenario Lab
+
+Predefined scenarios and parameter-driven stress testing.
+
+</td>
+<td width="50%">
+
+### 📊 Impact Analytics
+
+Dynamic runoff, storage, recharge and local-retention metrics.
+
+</td>
+</tr>
+</table>
+
+------------------------------------------------------------------------
+
+# 🧪 Testing, CI & Coverage
+
+The repository includes a GitHub Actions workflow at:
+
+``` text
+.github/workflows/ci.yml
+```
+
+The workflow validates the project on **Python 3.12 / Ubuntu 24.04** and
+is designed to run on pushes and pull requests to `main`, with manual
+workflow dispatch available.
+
+Run locally:
+
+``` bash
+pytest
+python -m ruff check .
+python -m pip check
+python -m compileall app.py pages src tests
+```
+
+The default pytest configuration calculates coverage, writes
+`coverage.xml`, and enforces a **75% minimum coverage gate** across
+`src`, `pages` and `app.py`.
+
+Current validated local engineering state:
+
+``` text
+Tests:          80 passed, 0 failed
+Coverage:       95.13%
+Coverage gate:  75%
+Python:         3.12
+Linting:        PASS
+Compilation:    PASS
+```
+
+<p align="center">
+
+<img src="https://img.shields.io/badge/TESTS-80%20PASS-16A34A?style=for-the-badge&logo=pytest&logoColor=white"/>
+<img src="https://img.shields.io/badge/COVERAGE-95.13%25-16A34A?style=for-the-badge"/>
+<img src="https://img.shields.io/badge/PYTHON%20COMPILATION-PASS-16A34A?style=for-the-badge&logo=python&logoColor=white"/>
+
+</p>
+
+Coverage includes WaterEvent generation, Moss
+conversion/indexing/retrieval boundaries, latency propagation/fallback,
+agent isolation, authoritative-fact immutability, persistence resilience
+and Streamlit workflows.
+
+------------------------------------------------------------------------
+
+# 📦 Reproducible Dependencies
+
+Direct dependencies are maintained in:
+
+``` text
+requirements.in
+```
+
+The resolved dependency set is pinned in:
+
+``` text
+requirements.txt
+```
+
+The lock is intended for the project's Python 3.12 environment.
+
+To intentionally refresh dependencies under review:
+
+``` bash
+uv pip compile requirements.in \
+  --python-version 3.12 \
+  --universal \
+  --no-emit-index-url \
+  -o requirements.txt
+```
+
+Dependency changes should be reviewed rather than silently upgraded
+during a hackathon deployment.
+
+------------------------------------------------------------------------
+
+# 💾 Persistence & Firestore Resilience
+
+The baseline application can operate entirely in memory.
+
+Optional Firestore persistence is available.
+
+| Variable                     |     Default | Purpose                               |
+|------------------------------|------------:|---------------------------------------|
+| `DATA_BACKEND`               |    `memory` | `memory` or `firestore`               |
+| `DEMO_MODE`                  |      `true` | Enables seeded demonstration behavior |
+| `GOOGLE_CLOUD_PROJECT`       |       unset | Optional GCP project                  |
+| `FIRESTORE_DATABASE`         | `(default)` | Firestore database                    |
+| `FIRESTORE_MAX_ATTEMPTS`     |         `3` | Bounded Firestore attempts            |
+| `FIRESTORE_INITIAL_DELAY_MS` |       `200` | Initial retry delay                   |
+| `FIRESTORE_MAX_DELAY_MS`     |      `2000` | Maximum backoff delay                 |
+| `FIRESTORE_TIMEOUT_SECONDS`  |         `5` | Per-RPC timeout                       |
+
+Collections include:
+
+``` text
+nodes
+simulation_runs
+node_events
+decisions
+impact_snapshots
+```
+
+Firestore resilience includes:
+
+- bounded retries for transient failures;
+- exponential backoff with jitter;
+- per-RPC timeout;
+- no retry for authentication/permission failures;
+- explicit in-memory fallback after exhaustion;
+- reuse of event IDs across retries to reduce duplicate-write risk;
+- structured non-secret logging;
+- preservation of seeded/last-successful node state where available.
+
+After fallback, the UI can explicitly report:
+
+``` text
+Persistence: MEMORY FALLBACK
+```
+
+Memory fallback is not durable and is not automatically replayed to
+Firestore.
+
+------------------------------------------------------------------------
+
+# 🔥 Failure & Degraded Modes
+
+| Condition                      | Behavior                                                   |
+|--------------------------------|------------------------------------------------------------|
+| 🧠 Moss disabled               | Deterministic Water Bank continues without semantic memory |
+| 🔑 Moss credentials missing    | Semantic context unavailable; application continues        |
+| ❌ Moss indexing failure       | No historical evidence is fabricated                       |
+| 🔍 Moss retrieval failure      | Structured operational analysis continues                  |
+| 🤖 One agent fails             | Other agents and authoritative facts remain available      |
+| 🧰 Maintenance evidence absent | System explicitly reports missing evidence                 |
+| 💾 Firestore transient failure | Bounded retry/backoff before fallback                      |
+| 💾 Firestore unavailable       | Explicit in-memory fallback                                |
+| 📡 Physical data absent        | Simulation limitation remains visible                      |
+| 👤 Human approval absent       | Approval remains pending                                   |
+
+------------------------------------------------------------------------
+
+# ⚙️ Technology Stack
+
+<p align="center">
+
+<img src="https://img.shields.io/badge/Python-3.12+-3776AB?style=for-the-badge&logo=python&logoColor=white"/>
+<img src="https://img.shields.io/badge/Streamlit-Application-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white"/>
+<img src="https://img.shields.io/badge/Moss-Semantic%20Memory-7C3AED?style=for-the-badge"/>
+<img src="https://img.shields.io/badge/Google%20Cloud-Cloud%20Run-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white"/>
+<img src="https://img.shields.io/badge/Docker-Container-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
+<img src="https://img.shields.io/badge/GitHub%20Actions-CI-2088FF?style=for-the-badge&logo=githubactions&logoColor=white"/>
+
+</p>
+
+| Layer              | Technology / Approach               |
+|--------------------|-------------------------------------|
+| 🐍 Application     | Python 3.12                         |
+| 🖥️ Interface       | Streamlit                           |
+| 🧠 Semantic Memory | Moss                                |
+| 🤖 Agent Layer     | Typed collaborative advisory agents |
+| 🎯 Orchestration   | Async Python orchestration          |
+| 📊 Data Models     | Structured Water Bank domain models |
+| 🗺️ Spatial View    | Chennai GIS-style visualization     |
+| 💾 Persistence     | Memory / optional Firestore         |
+| ☁️ Cloud           | Google Cloud Run                    |
+| 📦 Container       | Docker                              |
+| 🧪 Testing         | pytest + pytest-cov                 |
+| 🔎 Linting         | Ruff                                |
+| 🔄 CI              | GitHub Actions                      |
+
+------------------------------------------------------------------------
+
+# 🚀 Run Locally
+
+## Prerequisites
+
+``` text
+Python 3.12+
+```
+
+Create a virtual environment:
+
+``` bash
+python -m venv .venv
+```
+
+### Windows PowerShell
+
+``` powershell
+.venv\Scripts\Activate.ps1
+```
+
+### macOS / Linux
+
+``` bash
+source .venv/bin/activate
+```
+
+Install pinned dependencies:
+
+``` bash
+python -m pip install -r requirements.txt
+```
+
+Launch:
+
+``` bash
+streamlit run app.py
+```
+
+Cloud Run-equivalent local port:
+
+``` bash
+streamlit run app.py \
+  --server.address=0.0.0.0 \
+  --server.port=8080
+```
+
+------------------------------------------------------------------------
+
+# 🧠 Moss Configuration
+
+Moss is optional in baseline mode.
+
+Without Moss credentials, the deterministic Water Bank continues
+operating without semantic historical context.
+
+| Variable           |                     Default | Purpose                             |
+|--------------------|----------------------------:|-------------------------------------|
+| `MOSS_ENABLED`     |                     `false` | Enables Moss indexing and retrieval |
+| `MOSS_PROJECT_ID`  |                       unset | Moss project identifier             |
+| `MOSS_PROJECT_KEY` |                       unset | Moss project credential             |
+| `MOSS_INDEX_NAME`  | `chennai-water-bank-events` | WaterEvent semantic index           |
+| `MOSS_TOP_K`       |                         `4` | Bounded semantic result count       |
+
+### Setup
+
+1.  Create/configure a Moss project.
+2.  Supply the project ID and key securely.
+3.  Set `MOSS_ENABLED=true`.
+4.  Start Chennai Water Bank AI.
+5.  Run a meaningful simulated Water Bank scenario.
+6.  Run Collaborative Analysis.
+7.  Confirm Moss status and retrieved evidence.
+8.  Inspect the measured runtime retrieval timing.
+
+> 🔐 Never commit `MOSS_PROJECT_KEY`, `.env`, service-account JSON files
+> or other credentials to Git.
+
+------------------------------------------------------------------------
+
+# ☁️ Google Cloud Deployment
+
+The application is containerized for Google Cloud Run.
+
+Current public staging entry point:
+
+``` text
+https://chennai-water-bank-ai-staging-1032997828322.asia-south1.run.app/
+```
+
+Example deployment pattern:
+
+``` bash
+gcloud auth login
+gcloud config set project YOUR_PROJECT_ID
+
+gcloud run deploy chennai-water-bank-ai-staging \
+  --source . \
+  --region asia-south1 \
+  --allow-unauthenticated \
+  --port 8080
+```
+
+Moss and other credentials should be supplied through secure secret
+management rather than bundled into the repository or image.
+
+------------------------------------------------------------------------
+
+# 🎬 Hackathon Demo Flow
+
+A concise judge demonstration can follow:
+
+### 1️⃣ Open Command Center
+
+Show the distributed Water Bank network.
+
+### 2️⃣ Run Simulated Chennai Storm
+
+Trigger the deterministic simulation.
+
+### 3️⃣ Select a Node
+
+Show rainfall, storage, water quality, recharge and drain conditions.
+
+### 4️⃣ Show Deterministic Decision
+
+Explain that current numeric facts and safety gates remain
+authoritative.
+
+### 5️⃣ Run Collaborative Analysis
+
+Trigger the four-agent workflow.
+
+### 6️⃣ Show Moss Evidence
+
+Point to retrieved WaterEvents and timestamps.
+
+### 7️⃣ Show Shared Context
+
+Explain that one Moss retrieval is reused by all four agents.
+
+### 8️⃣ Show Runtime Timing
+
+Show Moss retrieval, agent and orchestration timing separately.
+
+### 9️⃣ Show Impact Analytics
+
+Explain stored litres, modelled recharge and the **Local Runoff
+Retention** formula.
+
+### 🔟 Show Human Review
+
+Point to Accept, Reject and Request More Evidence.
+
+> **“The deterministic Water Bank provides current operational truth.
+> Moss gives the agents shared contextual memory. The AI advises, and
+> the human remains the final decision authority.”**
+
+------------------------------------------------------------------------
+
+# 🗣️ Project Demonstration Statement
+
+> ### “We are not claiming to eliminate Chennai floods.
+>
+> We are demonstrating how distributed water intelligence can model how
+> much suitable simulated runoff is allocated to local storage and
+> recharge before downstream release.
+>
+> Every litre is calculated, safety interventions remain visible, Moss
+> evidence is traceable, and every advisory recommendation remains
+> subject to human review.”
+
+------------------------------------------------------------------------
+
+# 🛡️ Responsible Engineering
+
+Chennai Water Bank AI follows a governance-first boundary:
+
+> ### AI may retrieve, analyse, explain and recommend — but consequential physical action remains human-controlled.
+
+No collaborative agent autonomously issues commands to:
+
+🚰 Valves  
+⚙️ Pumps  
+🌱 Recharge infrastructure  
+🌊 Drainage gates  
+🏗️ Physical Water Bank assets
+
+The deterministic safety layer and human operator remain outside the
+semantic-memory authority boundary.
+
+------------------------------------------------------------------------
+
+# ⚠️ Limitations
+
+The current project is a **prototype and demonstration environment**.
+
+- Software-demo Water Bank nodes and operational values are simulated.
+- Demonstration locations do not represent installed municipal
+  infrastructure.
+- The runoff model is not a calibrated city hydraulic model.
+- The model omits detailed pipe-network hydraulics, topography, tides,
+  backwater effects and coupled catchment behavior.
+- Modelled recharge does not prove local infiltration or aquifer
+  suitability.
+- Prototype water-quality thresholds do not replace certified testing.
+- Local runoff retention is not equivalent to flood depth or flood-risk
+  reduction.
+- Moss semantic evidence provides context and cannot overwrite current
+  authoritative numerical facts.
+- Advisory agents are not granted autonomous physical control.
+- Runtime latency depends on the active environment and should be
+  measured rather than assumed.
+
+------------------------------------------------------------------------
+
+# 🔭 Future Roadmap
+
+With validated field data and appropriate engineering review, future
+work can investigate:
+
+### 📡 Field IoT Integration
+
+Normalize verified sensor telemetry through the existing sensor-data
+boundary.
 
 ### 🌧️ Rainfall Forecasting
 
-Predict short-term localized rainfall.
+Integrate validated short-term localized rainfall forecasts.
 
-### 🌊 Runoff Prediction
+### 🌊 Hydraulic Validation
 
-Estimate incoming Water Bank demand.
+Connect the Water Bank allocation model to a calibrated
+hydrologic/hydraulic model.
 
-### ⚠️ Anomaly Detection
+### 🧠 Richer Agent Reasoning
 
-Identify unusual sensor or asset behavior.
+Evaluate additional model-based advisory reasoning while preserving
+authoritative facts and deterministic safety gates.
 
-### 💧 Storage Optimization
+### 🔎 Observability
 
-Coordinate distributed storage headroom.
+Add end-to-end tracing, correlation IDs and richer latency diagnostics.
 
-### 🌱 Recharge Optimization
+### 🔐 Security Hardening
 
-Evaluate safe distributed recharge opportunity.
+Extend authentication, authorization, rate limiting, secret rotation and
+audit controls for production environments.
 
-### 🔧 Predictive Maintenance
+### 🏙️ Real Asset Registry
 
-Identify Water Bank assets requiring inspection.
+Replace fictional nodes with validated infrastructure only under
+authorized deployment conditions.
 
-### 🕸️ Network Optimization
-
-Coordinate multiple Water Bank nodes across a city zone.
-
-### 🧠 Long-Term Semantic Memory
-
-Build evidence from validated operational history.
-
-Any future learned model should remain behind engineering safety constraints and expose uncertainty.
-
----
-
-# ⚠️ Current Limitations
-
-Chennai Water Bank AI is a research and engineering prototype.
-
-Current limitations include:
-
-- No physical Chennai sensor network is connected.
-- No verified Chennai incident or maintenance feed is connected.
-- Demonstration nodes do not represent installed Water Bank infrastructure.
-- Simulator-generated Moss records are not historical incidents.
-- The runoff model does not include full catchment hydraulics.
-- It omits detailed pipe capacity, topography, tides and time-of-concentration effects.
-- Recharge estimates do not establish aquifer suitability.
-- Water-quality rules do not replace certified laboratory assessment.
-- Retained litres do not equal flood depth or damage prevented.
-- Moss latency depends on runtime conditions.
-- Memory-mode application data is not durable across instance restarts.
-- Distributed Water Bank nodes cannot absorb unlimited extreme rainfall.
-- The concept does not replace municipal drainage, wetlands, reservoirs, watershed management or flood-control infrastructure.
-
----
-
-# 🛡️ Responsible Engineering Statement
-
-> **Chennai Water Bank AI is a decision-support prototype — not an autonomous municipal water-control system.**
-
-The project deliberately separates:
-
-### 📊 Operational Truth
-
-from
-
-### 🧠 Semantic Context
-
-from
-
-### 🤖 AI Advice
-
-from
-
-### 👤 Decision Authority
-
-This separation is fundamental to the architecture.
-
----
-
-# 🌍 Project Vision
-
-<p align="center">
-
-### 🌧️ Don't just drain the rain.
-
-### 💧 Understand it.
-
-### 🏦 Bank it where appropriate.
-
-### 🧠 Learn from every meaningful event.
-
-### 🤖 Coordinate intelligence across the network.
-
-### 👤 Keep humans in control.
-
-</p>
-
-The long-term vision is a distributed urban water-management network in which participating buildings and infrastructure become intelligent **Water Bank Nodes**.
-
-Each node contributes to a shared picture of:
-
-💧 Distributed storage  
-🌱 Recharge opportunity  
-🌧️ Rainfall exposure  
-🌊 Drain stress  
-🛠️ Asset readiness  
-📊 Water inventory  
-🧠 Operational memory  
-
----
-
-# 🏦 Chennai Water Bank
-
-<p align="center">
-
-<img src="https://img.shields.io/badge/💧%20BANK-THE%20RAIN-0284C7?style=for-the-badge"/>
-<img src="https://img.shields.io/badge/🌊%20REDUCE-THE%20FLOOD-0EA5E9?style=for-the-badge"/>
-<img src="https://img.shields.io/badge/🌱%20SECURE-THE%20FUTURE-16A34A?style=for-the-badge"/>
-
-</p>
-
-<p align="center">
-<b>
-Distributed Water Intelligence • Semantic Memory • Collaborative AI • Human-Governed Decisions
-</b>
-</p>
-
----
+------------------------------------------------------------------------
 
 # 👥 Team
 
-<p align="center">
-
 ## LOGOS VICTORIS
 
-<b>Chennai Water Bank AI</b>
+**Chennai Water Bank AI**  
+Moss-Powered Collaborative Intelligence for Distributed Urban Water
+Management
 
-Moss-Powered Collaborative Intelligence for Distributed Urban Water Management
-
-</p>
-
----
+------------------------------------------------------------------------
 
 # 🤝 Explore the Project
 
@@ -1337,23 +1390,16 @@ Moss-Powered Collaborative Intelligence for Distributed Urban Water Management
 <img src="https://img.shields.io/badge/🚀%20LIVE-STAGING%20DEMO-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white"/>
 </a>
 
-</p>
+<a href="https://www.youtube.com/watch?v=hvbKTbRtTag">
+<img src="https://img.shields.io/badge/▶️%20DEMO-YOUTUBE-FF0000?style=for-the-badge&logo=youtube&logoColor=white"/>
+</a>
 
----
+</p>
 
 <p align="center">
-
-### 🌧️ Bank the Rain. 💧 Reduce the Flood. 🌱 Secure the Future.
-
-<br/>
-
-<b>Chennai Water Bank AI</b>
-
-<br/>
-
-<i>
-Turning distributed rainwater infrastructure into
-evidence-aware, collaborative and human-governed urban water intelligence.
-</i>
-
+<b>Distributed Water Intelligence • Semantic Memory • Collaborative Agents • Human-Governed Decisions</b>
 </p>
+
+<h3 align="center">
+🌧️ Bank the Rain • 💧 Reduce the Flood • 🌱 Secure the Future
+</h3>
