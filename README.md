@@ -1389,7 +1389,7 @@ repository-native collaborative AI agent.
 ---
 
 <p align="center">
-------------------------------------------------------------------------
+
 # 🤝 Explore the Project
 
 <p align="center">
