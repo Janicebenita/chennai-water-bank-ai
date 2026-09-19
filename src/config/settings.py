@@ -47,6 +47,10 @@ class Settings:
     demo_mode: bool = True
     gcp_project: str | None = None
     firestore_database: str = "(default)"
+    firestore_max_attempts: int = 3
+    firestore_initial_delay_ms: int = 200
+    firestore_max_delay_ms: int = 2000
+    firestore_timeout_seconds: int = 5
     moss_enabled: bool = False
     moss_project_id: str | None = None
     moss_project_key: str | None = field(default=None, repr=False)
@@ -81,6 +85,10 @@ def get_settings() -> Settings:
         demo_mode=_as_bool(os.getenv("DEMO_MODE"), True),
         gcp_project=os.getenv("GOOGLE_CLOUD_PROJECT") or None,
         firestore_database=os.getenv("FIRESTORE_DATABASE", "(default)"),
+        firestore_max_attempts=_bounded_int(os.getenv("FIRESTORE_MAX_ATTEMPTS"), 3, 1, 5),
+        firestore_initial_delay_ms=_bounded_int(os.getenv("FIRESTORE_INITIAL_DELAY_MS"), 200, 0, 5000),
+        firestore_max_delay_ms=_bounded_int(os.getenv("FIRESTORE_MAX_DELAY_MS"), 2000, 0, 10000),
+        firestore_timeout_seconds=_bounded_int(os.getenv("FIRESTORE_TIMEOUT_SECONDS"), 5, 1, 30),
         moss_enabled=_as_bool(os.getenv("MOSS_ENABLED"), False),
         moss_project_id=os.getenv("MOSS_PROJECT_ID") or None,
         moss_project_key=os.getenv("MOSS_PROJECT_KEY") or None,

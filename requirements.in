@@ -1,0 +1,13 @@
+# Direct application and CI dependencies; versions from installed metadata.
+# pandas and Firestore resolved within the original repository constraints on Python 3.12.
+streamlit==1.57.0
+numpy==2.4.6
+plotly==6.8.0
+moss==1.9.1
+pytest==8.4.2
+pytest-cov==6.3.0
+ruff==0.16.1
+pandas==2.3.3
+google-cloud-firestore==2.31.0
+google-api-core==2.38.0
+google-auth==2.58.0

@@ -11,6 +11,67 @@
 
 <h1 align="center">🌧️ Chennai Water Bank AI 💧</h1>
 
+[![CI](https://github.com/Janicebenita/chennai-water-bank-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/Janicebenita/chennai-water-bank-ai/actions/workflows/ci.yml)
+
+## 🚀 Live Demo
+
+- [Public application — existing staging deployment](https://chennai-water-bank-ai-staging-1032997828322.asia-south1.run.app/)
+- [Command Center](https://chennai-water-bank-ai-staging-1032997828322.asia-south1.run.app/command_center) (also the application home page)
+- [Demo video — YouTube](https://www.youtube.com/watch?v=hvbKTbRtTag)
+
+This engineering upgrade is local and has not been deployed. The existing application, Command Center and health endpoint returned HTTP 200 during read-only validation.
+
+## 🧠 What Uses AI/Moss and What Is Deterministic?
+
+> **Structured operational data provides current truth.
+> Moss semantic memory provides context.**
+
+| Component | Actual implementation |
+|---|---|
+| Rainfall/runoff calculations | Deterministic simulated rainfall, catchment area and runoff coefficient |
+| Storage headroom and capacity constraints | Deterministic numeric limits from current structured state |
+| Water-quality safety gates and recharge eligibility | Deterministic thresholds; unsafe/first-flush water cannot directly recharge |
+| Mass balance and routing decision rules | Deterministic engineering allocation; semantic evidence cannot overwrite numeric facts |
+| WaterEvent generation | Structured transformation with deterministic event classification, IDs and text |
+| WaterEvent indexing | Moss SDK indexes/upserts the structured event's semantic representation |
+| Semantic and historical/context retrieval | Moss retrieves contextual evidence; demonstration events remain labelled simulated |
+| Shared semantic context | One bounded retrieval shared by all four advisory agents |
+| Rain & Risk Agent | Rule-based risk thresholds and bounded references to retrieved evidence; no LLM call |
+| Incident Memory Agent | Rule-based presentation of retrieved IDs, actions and outcomes; no invented incidents or LLM call |
+| Capacity Agent | Deterministic advice from authoritative storage and recharge values; no AI numeric prediction |
+| Asset & Maintenance Agent | Rule-based availability checks and filtering of Moss evidence; no LLM call |
+| Orchestrator | Async coordination, failure isolation and templated advisory assembly; no generative AI synthesis |
+| Human review | Final approval/rejection or request for more evidence; no physical actuation |
+
+**Without Moss, the deterministic Water Bank remains safe but memoryless. With Moss, the collaborative agents become evidence-aware.** Here, “safe” means preserving the prototype's deterministic gates, not certification for physical deployment. The AI capability is Moss semantic retrieval; the current advisory agents and synthesis use Python rules. Semantic evidence cannot overwrite authoritative current numeric facts.
+
+## Engineering quality
+
+Local validation on Python 3.12.14: **80 tests passed, 0 failed** (baseline: 52 passed).
+Coverage across **all `src`, `pages`, and `app.py` code: 95.13%**.
+**Coverage gate: >=75%**, enforced by pytest and CI. No application modules are excluded.
+
+| Check / boundary | Status |
+|---|---|
+| CI | Workflow added for main pushes, pull requests to main and manual runs; first hosted run pending push |
+| Lint and compilation | Ruff and Python compilation validated locally |
+| Dependencies | Exact direct and transitive pins; original `moss==1.9.1` preserved |
+| Deployment | Existing staging URL preserved; no deployment or production Cloud Run changes |
+| Persistence | Bounded transient retries, capped exponential backoff with jitter, per-RPC timeout, explicit MEMORY FALLBACK |
+| Moss unavailable/disabled | Deterministic analysis continues; missing evidence is reported, never fabricated |
+| Human authority | Final review remains required; no physical commands are issued |
+
+The runtime metrics are scenario measurements, not published performance benchmarks. Docker build validation requires a running Docker engine; it was unavailable during this local validation.
+
+## Measurable scenario impact
+
+Impact Analytics reuses the existing allocation ledger to show incoming simulated runoff, local storage, modelled groundwater recharge, safety diversion, controlled discharge, total locally retained water and immediate downstream runoff. Retained volume is **stored + recharged**; retention percentage is **100 × retained / incoming**, or zero for no incoming runoff.
+
+Use the interpretation **“X% of simulated immediate runoff was locally retained in this scenario.”** This is not a claim of flooding reduced by X%; there is no validated hydraulic flood model.
+
+The Command Center's collaborative analysis and Latency tab expose runtime Moss retrieval, individual agent, orchestration and total advisory-request durations. Moss timing uses the SDK's reported milliseconds when valid, with monotonic timing as the existing fallback. Orchestration includes the concurrent agent stage and recommendation assembly. Total request includes event persistence, indexing, retrieval and orchestration; it excludes the earlier simulation, browser rendering and human review. Agent times overlap and are not an additive latency budget. No fixed latency or impact values are claimed.
+
+
 <h3 align="center">
 Bank the Rain • Reduce the Flood • Secure the Future
 </h3>
@@ -22,7 +83,7 @@ Bank the Rain • Reduce the Flood • Secure the Future
 <p align="center">
 A simulation-driven urban water intelligence platform that combines
 distributed Water Bank nodes, explainable water-allocation logic,
-semantic memory, four collaborative AI agents, and human-governed
+semantic memory, four collaborative advisory agents, and human-governed
 decision support.
 </p>
 
@@ -41,7 +102,6 @@ decision support.
 <img src="https://img.shields.io/badge/Streamlit-Command%20Center-FF4B4B?style=flat-square&logo=streamlit&logoColor=white"/>
 <img src="https://img.shields.io/badge/Google%20Cloud-Cloud%20Run-4285F4?style=flat-square&logo=googlecloud&logoColor=white"/>
 <img src="https://img.shields.io/badge/Docker-Containerized-2496ED?style=flat-square&logo=docker&logoColor=white"/>
-<img src="https://img.shields.io/badge/pytest-52%2F52%20Passing-0A9EDC?style=flat-square&logo=pytest&logoColor=white"/>
 
 </p>
 
@@ -296,7 +356,7 @@ They are not presented as historical Chennai incidents.
 
 ---
 
-# 🤖 Four Collaborative AI Agents
+# 🤖 Four Collaborative Advisory Agents
 
 <p align="center">
 
@@ -915,17 +975,33 @@ Run:
 pytest
 ```
 
+The default pytest command calculates coverage, writes `coverage.xml` and enforces 75% across `src`, `pages` and `app.py`. CI runs without production credentials; Firestore SDK boundaries and Moss calls are mocked in unit tests.
+
+```bash
+python -m ruff check .
+python -m pip check
+```
+
+The lock resolves for Python 3.12 on Ubuntu 24.04 (the CI runner). The existing Moss native wheel requires Linux x86_64 glibc >=2.35; older Linux targets are not supported by that wheel.
+
+The portable lock was generated with uv 0.12.17 from verified installed/resolved metadata, including platform-specific dependencies. To intentionally refresh it under review:
+
+```bash
+uv pip compile requirements.in --python-version 3.12 --universal --no-emit-index-url -o requirements.txt
+```
+
+`requirements.in` lists direct application/test dependencies. The optional historical report generator is not part of the application runtime or CI execution.
+
 Compile-check:
 
 ```bash
 python -m compileall app.py pages src tests
 ```
 
-Current validated development state:
+Current local validation: **80 tests passed, 0 failed; 95.13% coverage; 75% gate**. The CI badge above reflects hosted runs once this workflow is pushed.
 
 <p align="center">
 
-<img src="https://img.shields.io/badge/TESTS-52%2F52%20PASS-16A34A?style=for-the-badge&logo=pytest&logoColor=white"/>
 <img src="https://img.shields.io/badge/PYTHON%20COMPILATION-PASS-16A34A?style=for-the-badge&logo=python&logoColor=white"/>
 <img src="https://img.shields.io/badge/MOSS%20FALLBACK-VALIDATED-7C3AED?style=for-the-badge"/>
 
@@ -980,7 +1056,18 @@ decisions
 impact_snapshots
 ```
 
-If Firestore initialization or health validation fails, the prototype deliberately falls back to seeded memory mode.
+Firestore initialization, health checks, reads and writes degrade explicitly to the existing memory backend when service access fails. Transient service/network failures receive up to three attempts by default, with capped exponential backoff and equal jitter. Permission/authentication failures do not retry; runtime programming errors propagate. SDK retries are disabled to avoid nested retry budgets.
+
+| Retry setting | Default | Accepted environment range |
+|---|---:|---|
+| `FIRESTORE_MAX_ATTEMPTS` | 3 | 1–5 |
+| `FIRESTORE_INITIAL_DELAY_MS` | 200 | 0–5000 |
+| `FIRESTORE_MAX_DELAY_MS` | 2000 | 0–10000 |
+| `FIRESTORE_TIMEOUT_SECONDS` | 5 | 1–30 per RPC |
+
+After exhaustion the sidebar shows **Persistence: MEMORY FALLBACK** and a fixed, non-secret reason. Structured logs contain operation, attempt and safe reason codes, never exception messages or payloads. Successful node reads/writes refresh the local mirror; otherwise seeded demonstration nodes remain available. Event retries reuse a document ID to avoid duplicates after uncertain acknowledgements.
+
+Fallback is sticky for the cached repository's lifetime; restart/recreate it to try Firestore again. Memory writes are not durable or automatically replayed to Firestore. An ambiguous failed write may already have reached Firestore, so fallback is not a synchronization guarantee. Human review and the current-truth/context boundary still apply.
 
 ---
 

@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from src.simulation.scenarios import SCENARIOS
-from src.ui.components import decision_card, hero, routing_flow, safety_notice, section_heading
+from src.ui.components import decision_card, hero, routing_flow, safety_notice
 from src.ui.scenario_controls import run_scenario, show_mathematics
 from src.ui.theme import configure_page, render_sidebar_context
 

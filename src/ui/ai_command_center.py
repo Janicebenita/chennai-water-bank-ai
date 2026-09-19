@@ -158,6 +158,12 @@ def _render_result(result: OrchestratorResult) -> None:
             "Moss retrieval uses the SDK-reported query time when available, with a "
             "measured monotonic compatibility fallback. No demo values are hard-coded."
         )
+        st.caption(
+            "Orchestrator time includes the concurrent agent stage and recommendation assembly. "
+            "Total request measures advisory analysis, including event persistence, indexing and "
+            "retrieval; it excludes earlier simulation, page rendering and human review. "
+            "Agent durations overlap and should not be added to orchestration time."
+        )
 
     st.markdown("#### Human operations review")
     accept, reject, evidence = st.columns(3)

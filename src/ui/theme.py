@@ -111,6 +111,17 @@ def render_sidebar_context() -> bool:
             unsafe_allow_html=True,
         )
         st.caption("All rainfall, node, quality and impact values are simulated prototype data.")
+        # Poll the cached adapter so an outage during this session remains visible.
+        from src.ui.runtime import repository
+
+        @st.fragment(run_every="5s")
+        def persistence_status() -> None:
+            repo = repository()
+            st.caption(f"Persistence: {repo.persistence_status}")
+            if repo.degraded_reason:
+                st.warning(repo.degraded_reason)
+
+        persistence_status()
     if presentation_mode:
         st.markdown(
             "<style>.block-container{max-width:1600px}.kpi{min-height:135px}.kpi-value{font-size:1.95rem}</style>",

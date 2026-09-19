@@ -42,8 +42,12 @@ with right:
         - Calculated runoff: **{impact.stormwater_received_l:,.0f} L**
         - Stored locally: **{impact.stored_l:,.0f} L**
         - Routed toward modelled recharge: **{impact.recharged_l:,.0f} L**
+        - Safety diversion: **{impact.diverted_l:,.0f} L**
+        - Controlled discharge: **{impact.controlled_discharge_l:,.0f} L**
         - Immediate downstream runoff: **{impact.immediate_downstream_l:,.0f} L**
         - Estimated immediate runoff retained at the modelled catchments: **{impact.retained_l:,.0f} L**
+
+        **{impact.retention_percentage:.1f}% of simulated immediate runoff was locally retained in this scenario.**
 
         This is a volume-allocation estimate, not a hydraulic flood-depth or damage model.
         """

@@ -22,6 +22,8 @@ __pycache__/
 *.pyo
 .pytest_cache/
 .coverage
+coverage.xml
+.ruff_cache/
 htmlcov/
 .venv/
 venv/
