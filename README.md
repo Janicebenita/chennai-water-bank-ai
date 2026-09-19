@@ -1377,7 +1377,19 @@ Moss-Powered Collaborative Intelligence for Distributed Urban Water
 Management
 
 ------------------------------------------------------------------------
+## 👤 Author
 
+Built by **[Janice Benita F](https://github.com/Janicebenita)** for the
+**YC Fall 2026 x Moss: The Zero Latency Builder Sprint**.
+
+This repository preserves the evidence-driven, human-governed architecture
+that powered SentinelOps Nexus while defining the system explicitly as a
+repository-native collaborative AI agent.
+
+---
+
+<p align="center">
+------------------------------------------------------------------------
 # 🤝 Explore the Project
 
 <p align="center">
